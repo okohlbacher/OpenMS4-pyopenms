@@ -108,7 +108,7 @@ bindings, with no Core algorithms compiled. It requires installed Arrow,
 nanobind and PyArrow:
 
 ```sh
-cmake -S tests/native_arrow -B build-arrow -DCMAKE_BUILD_TYPE=Debug \
+cmake -S tools/native_arrow -B build-arrow -DCMAKE_BUILD_TYPE=Debug \
   -DPython_EXECUTABLE=/path/to/python
 cmake --build build-arrow --parallel 2
 ctest --test-dir build-arrow --output-on-failure
@@ -126,7 +126,7 @@ UndefinedBehaviorSanitizer, without another test implementation. On macOS with
 AppleClang, preload its sanitizer runtime into Python directly:
 
 ```sh
-cmake -S tests/native_arrow -B build-arrow-sanitized -DCMAKE_BUILD_TYPE=Debug \
+cmake -S tools/native_arrow -B build-arrow-sanitized -DCMAKE_BUILD_TYPE=Debug \
   -DPython_EXECUTABLE=/path/to/python \
   '-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer'
 cmake --build build-arrow-sanitized --parallel 1
@@ -134,7 +134,7 @@ DYLD_INSERT_LIBRARIES="$(xcrun clang --print-resource-dir)/lib/darwin/libclang_r
   ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 \
   UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
   PYTHONPATH="$PWD/build-arrow-sanitized" \
-  /path/to/python -m pytest tests/native_arrow/test_arrow_table.py
+  /path/to/python -m pytest tools/native_arrow/test_arrow_table.py
 ```
 
 Use the same installed dependency search paths as the ordinary probe. Launching

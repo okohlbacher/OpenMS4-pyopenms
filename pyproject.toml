@@ -131,6 +131,7 @@ include = [
     "cmake/*.in",
     "tests/**",
     "tools/*.py",
+    "tools/native_arrow/**",
     "MANIFEST.in",
     "pyopenms/*.py",
     "pyopenms/*.pyi",
