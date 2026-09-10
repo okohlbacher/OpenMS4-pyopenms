@@ -279,11 +279,6 @@
       "path": "pyTOPP/common.py"
     },
     {
-      "upstream": "src/pyOpenMS/pyTOPP/common.pyc",
-      "package": "pyopenms",
-      "path": "pyTOPP/common.pyc"
-    },
-    {
       "upstream": "src/pyOpenMS/pyTOPP/pyTOPPExample.py",
       "package": "pyopenms",
       "path": "pyTOPP/pyTOPPExample.py"
@@ -1272,6 +1267,12 @@
       "upstream": ".clang-format",
       "package": "pyopenms",
       "path": ".clang-format"
+    }
+  ],
+  "omitted_generated_files": [
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/common.pyc",
+      "reason": "Legacy compiled Python cache; common.py source is retained."
     }
   ]
 }
