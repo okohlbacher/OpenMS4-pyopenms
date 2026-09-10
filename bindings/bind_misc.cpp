@@ -28,7 +28,9 @@
 #include <OpenMS/ANALYSIS/ID/MetaboliteSpectralMatching.h>
 #include <OpenMS/ANALYSIS/ID/PeptideIndexing.h>
 #include <OpenMS/ANALYSIS/ID/OpenSearchModificationAnalysis.h>
+#if PYOPENMS_WITH_PROSE
 #include <OpenMS/ANALYSIS/ID/ProSEAlgorithm.h>
+#endif
 #include <OpenMS/ANALYSIS/ID/SimpleSearchEngineAlgorithm.h>
 #include <OpenMS/ANALYSIS/ID/SiriusExportAlgorithm.h>
 #include <OpenMS/ANALYSIS/MAPMATCHING/BaseGroupFinder.h>
@@ -85,8 +87,12 @@
 #include <OpenMS/ANALYSIS/QUANTITATION/TMTSixteenPlexQuantitationMethod.h>
 #include <OpenMS/ANALYSIS/QUANTITATION/TMTTenPlexQuantitationMethod.h>
 #include <OpenMS/ANALYSIS/TARGETED/MRMMapping.h>
+#if PYOPENMS_WITH_FLASH
 #include <OpenMS/ANALYSIS/TOPDOWN/FLASHDeconvAlgorithm.h>
+#endif
+#if PYOPENMS_WITH_FLASH
 #include <OpenMS/ANALYSIS/TOPDOWN/SpectralDeconvolution.h>
+#endif
 #include <OpenMS/ANALYSIS/XLMS/OpenPepXLAlgorithm.h>
 #include <OpenMS/ANALYSIS/XLMS/XFDRAlgorithm.h>
 #include <OpenMS/CHEMISTRY/MASSDECOMPOSITION/MassDecompositionAlgorithm.h>
@@ -2584,6 +2590,7 @@ print(entry.identifier)
         })
         ;
 
+#if PYOPENMS_WITH_FLASH
     // -----------------------------------------------------------------------
     // FLASHDeconvAlgorithm
     // -----------------------------------------------------------------------
@@ -2612,6 +2619,8 @@ Constructors
         .def_static("getScanNumber", [](const OpenMS::MSExperiment& map, size_t index) { return OpenMS::FLASHDeconvAlgorithm::getScanNumber(map, index); }, "map"_a, "index"_a, "Get the scan number of the index-th spectrum in map.")
         ;
     def_ProgressLogger<OpenMS::FLASHDeconvAlgorithm>(flashdeconvalgorithm_class);
+
+#endif
 
     // -----------------------------------------------------------------------
     // FeatureFinderAlgorithmPicked
@@ -3466,6 +3475,7 @@ only in decoy proteins, or in both. The target/decoy information is crucial for 
             "Write PTM statistics to a TSV file")
         ;
 
+#if PYOPENMS_WITH_PROSE
     // -----------------------------------------------------------------------
     // ProSEAlgorithm
     // -----------------------------------------------------------------------
@@ -3553,6 +3563,8 @@ outputs (ProteinIdentification and PeptideIdentificationList)
         .value("UNKNOWN_ERROR", OpenMS::ProSEAlgorithm::ExitCodes::UNKNOWN_ERROR)
         .value("ILLEGAL_PARAMETERS", OpenMS::ProSEAlgorithm::ExitCodes::ILLEGAL_PARAMETERS)
         .export_values();
+
+#endif
 
     // -----------------------------------------------------------------------
     // QTClusterFinder
@@ -3716,6 +3728,7 @@ DefaultParamHandler
         .def("average", [](OpenMS::SpectraMerger& self, OpenMS::MSExperiment& exp, const std::string& average_type, int ms_level) { self.average(exp, average_type, ms_level); }, "exp"_a, "average_type"_a, "ms_level"_a = -1, "Averages spectra")
         ;
 
+#if PYOPENMS_WITH_FLASH
     // -----------------------------------------------------------------------
     // SpectralDeconvolution
     // -----------------------------------------------------------------------
@@ -3751,6 +3764,8 @@ Constructors
         }, "mono_mass"_a, "per_isotope_intensities"_a, "avg"_a, "iso_int_shift"_a, "window_width"_a, "excluded_masses"_a, "Calculate cosine between two vectors with optimization parameters")
         .def("setTargetDecoyType", [](OpenMS::SpectralDeconvolution& self, OpenMS::PeakGroup::TargetDecoyType target_decoy_type, const OpenMS::DeconvolvedSpectrum& target_dspec_for_decoy_calcualtion) { return self.setTargetDecoyType(target_decoy_type, target_dspec_for_decoy_calcualtion); }, "target_decoy_type"_a, "target_dspec_for_decoy_calcualtion"_a, "When estimating tolerance, set max_mass_dalton_tolerance to a large value")
         ;
+
+#endif
 
     // -----------------------------------------------------------------------
     // Spectrum

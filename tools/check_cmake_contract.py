@@ -10,10 +10,10 @@ with tempfile.TemporaryDirectory(prefix='openms4-py-contract-') as td:
     base=pathlib.Path(td); src=base/'source'; src.mkdir(); prefix=base/'sdk'; prefix.mkdir(); modules=base/'modules'; modules.mkdir()
     for p in root.iterdir():
         if p.name not in ('dependencies.lock.json', '.git'): (src/p.name).symlink_to(p, target_is_directory=p.is_dir())
-    (src/'dependencies.lock.json').write_text(json.dumps({'dependencies':{name:{'version':'4.0.0','source_revision':'1'*40} for name in ['OpenMS','OpenMSTestData']}}))
+    (src/'dependencies.lock.json').write_text(json.dumps({'dependencies':{name:{'version':'4.0.0','source_revision':'1'*40} for name in ['OpenMS','OpenMSTestData','OpenMSProSE','OpenMSFLASH']}}))
     share=prefix/'share/OpenMS/4.0.0'; (share/'CHEMISTRY').mkdir(parents=True); (share/'CHEMISTRY/unimod.xml').write_text('<fixture/>')
     (share/'test-data/core').mkdir(parents=True); (share/'test-data/core/test-only-marker.txt').write_text('exclude me'); (share/'examples').mkdir(); (share/'examples/example.txt').write_text('exclude me'); topp=prefix/'share/topp'; topp.mkdir(parents=True)
-    for name in ['OpenMS','OpenMSTestData','nanobind']:
+    for name in ['OpenMS','OpenMSTestData','OpenMSProSE','OpenMSFLASH','nanobind']:
         directory=prefix/'lib/cmake'/name; directory.mkdir(parents=True)
         version='2.10.0' if name=='nanobind' else '4.0.0'
         (directory/f'{name}ConfigVersion.cmake').write_text(f'set(PACKAGE_VERSION "{version}")\nif(PACKAGE_FIND_VERSION STREQUAL PACKAGE_VERSION)\nset(PACKAGE_VERSION_COMPATIBLE TRUE)\nset(PACKAGE_VERSION_EXACT TRUE)\nendif()\n')
@@ -31,6 +31,9 @@ add_library(OpenMS::Arrow INTERFACE IMPORTED)
 add_library(Eigen3::Eigen INTERFACE IMPORTED)
 ''')
     (prefix/'lib/cmake/OpenMSTestData/OpenMSTestDataConfig.cmake').write_text(f'set(OpenMSTestData_VERSION 4.0.0)\nset(OpenMSTestData_SOURCE_REVISION {"1"*40})\nset(OpenMSTestData_TOPP_DIR "{topp}")\n')
+    for backend in ['ProSE', 'FLASH']:
+        (prefix/f'lib/cmake/OpenMS{backend}/OpenMS{backend}Config.cmake').write_text(
+            f'set(OpenMS{backend}_VERSION 4.0.0)\nset(OpenMS{backend}_SOURCE_REVISION {"1"*40})\nadd_library(OpenMS::{backend} INTERFACE IMPORTED)\n')
     (prefix/'lib/cmake/nanobind/nanobindConfig.cmake').write_text('''function(nanobind_add_module name)
 set(sources)
 foreach(arg IN LISTS ARGN)
@@ -76,6 +79,7 @@ set(CMAKE_CXX_COMPILER_WORKS TRUE)
             provenance=json.loads((staged/'_build_provenance.json').read_text())
             assert provenance['source_revision']=='3'*40 and provenance['source_dirty'] is False
             assert provenance['core']==identity
+            assert set(provenance['tool_backends'])=={'ProSE','FLASH'}
             assert (staged/'share/OpenMS/CHEMISTRY/unimod.xml').is_file()
             assert not (staged/'share/OpenMS/test-data').exists()
             assert not (staged/'share/OpenMS/examples').exists()

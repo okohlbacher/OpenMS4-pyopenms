@@ -43,10 +43,32 @@ foreach(_target OpenMS::Core OpenMS::OpenSwathAlgo)
     message(FATAL_ERROR "${_target} must come from an installed SDK, not an in-tree core build")
   endif()
 endforeach()
+# Optional installed scientific backends preserve the historical full Python API.
+# Neither provider requires its executable or the CLI library at runtime.
+option(PYOPENMS_WITH_PROSE "Include the separately installed ProSE backend API" ON)
+option(PYOPENMS_WITH_FLASH "Include the separately installed FLASH backend API" ON)
+set(_pyopenms_backends "{}")
+foreach(backend ProSE FLASH)
+  string(TOUPPER "${backend}" feature)
+  if(PYOPENMS_WITH_${feature})
+    openms4_find_package(OpenMS${backend})
+    if(NOT TARGET OpenMS::${backend})
+      message(FATAL_ERROR "OpenMS${backend} must export its installed backend target")
+    endif()
+    get_target_property(_backend_imported OpenMS::${backend} IMPORTED)
+    if(NOT _backend_imported)
+      message(FATAL_ERROR "OpenMS::${backend} must come from an installed provider")
+    endif()
+    string(JSON _pyopenms_backends SET "${_pyopenms_backends}" "${backend}"
+      "{\"version\":\"${OpenMS${backend}_VERSION}\",\"source_revision\":\"${OpenMS${backend}_SOURCE_REVISION}\"}")
+  endif()
+endforeach()
+
 set(OPENMS_TARGET OpenMS::Core)
 set(OPENSWATHALGO_TARGET OpenMS::OpenSwathAlgo)
 set(CF_OPENMS_PACKAGE_VERSION "${OpenMS_VERSION}")
 include(cmake/PyOpenMSBuildIdentity.cmake)
+string(JSON _pyopenms_provenance SET "${_pyopenms_provenance}" tool_backends "${_pyopenms_backends}")
 
 # The SDK owns runtime data. Wheel builds never search a sibling source tree.
 set(OPENMS_SHARE_DIR "${OpenMS_SHARE_DIR}")
@@ -74,6 +96,12 @@ set(PYOPENMS_BUILD_DIR "${CMAKE_CURRENT_BINARY_DIR}/pyOpenMS")
 set(_pyopenms_python_cmd "${CMAKE_COMMAND}" -E env "PYTHONPATH=${PYOPENMS_BUILD_DIR}")
 if(WIN32)
   set(_pyopenms_dll_dirs "$<TARGET_FILE_DIR:OpenMS::Core>$<SEMICOLON>$<TARGET_FILE_DIR:OpenMS::OpenSwathAlgo>")
+  foreach(backend ProSE FLASH)
+    string(TOUPPER "${backend}" feature)
+    if(PYOPENMS_WITH_${feature})
+      string(APPEND _pyopenms_dll_dirs "$<SEMICOLON>$<TARGET_FILE_DIR:OpenMS::${backend}>")
+    endif()
+  endforeach()
   if(PYOPENMS_DLL_PATH)
     string(REPLACE ";" "$<SEMICOLON>" _extra_dll_dirs "${PYOPENMS_DLL_PATH}")
     string(APPEND _pyopenms_dll_dirs "$<SEMICOLON>${_extra_dll_dirs}")
@@ -180,6 +208,17 @@ foreach(domain ${PYOPENMS_DOMAINS})
   )
   _pyopenms_module_props(${MODULE_NAME})
 endforeach()
+
+# Only the misc binding module uses the moved APIs; other domains stay Core-only.
+target_compile_definitions(_pyopenms_misc PRIVATE
+  PYOPENMS_WITH_PROSE=$<BOOL:${PYOPENMS_WITH_PROSE}>
+  PYOPENMS_WITH_FLASH=$<BOOL:${PYOPENMS_WITH_FLASH}>)
+if(PYOPENMS_WITH_PROSE)
+  target_link_libraries(_pyopenms_misc PRIVATE OpenMS::ProSE)
+endif()
+if(PYOPENMS_WITH_FLASH)
+  target_link_libraries(_pyopenms_misc PRIVATE OpenMS::FLASH)
+endif()
 
 # Main entry module
 nanobind_add_module(_pyopenms

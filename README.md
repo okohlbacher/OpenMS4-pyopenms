@@ -1,3 +1,17 @@
+# Optional scientific tool backends
+
+The default full API additionally consumes the exact installed OpenMSProSE and
+OpenMSFLASH backend SDKs in `dependencies.lock.json`. These libraries require Core,
+not their executables or CLI. Existing ProSEAlgorithm, FLASHDeconvAlgorithm and
+SpectralDeconvolution Python methods remain available with their original names.
+Wheel repair must bundle the selected backend libraries along with Core.
+
+For an explicitly reduced Core-only API, configure
+`-DPYOPENMS_WITH_PROSE=OFF -DPYOPENMS_WITH_FLASH=OFF`; the corresponding classes are
+then intentionally absent. Build provenance records selected backend revisions.
+Do not replace Core or a backend beneath an already-built wheel: rebuild against
+matching source pins and the same native build configuration.
+
 # Standalone pyOpenMS experiment
 
 This repository contains the complete hand-maintained nanobind bindings, Python
