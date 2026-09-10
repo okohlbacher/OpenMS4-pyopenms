@@ -20,6 +20,7 @@ class RuntimeIdentityTests(unittest.TestCase):
             system_processor=platform.machine(), cxx_compiler_id="Clang",
             cxx_compiler_version="17.0.0", cxx_standard=23, shared_libs=True,
             class_testing_enabled=True, stl_debug=False, features={"openswath": True},
+            standard_library="libc++", libstdcxx_cxx11_abi=None, msvc_runtime_library=None,
             dependencies={"arrow": {"version": "25.0.0", "linkage": "shared"}},
         )
 

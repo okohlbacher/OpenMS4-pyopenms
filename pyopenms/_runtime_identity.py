@@ -16,6 +16,7 @@ def validate_runtime_identity(expected, loaded):
         "schema_version", "source_revision", "source_dirty", "version",
         "build_type", "system_name", "system_processor", "cxx_compiler_id",
         "cxx_standard", "shared_libs", "stl_debug", "features", "dependencies",
+        "standard_library", "libstdcxx_cxx11_abi", "msvc_runtime_library",
     )
     for field in fields:
         if field not in expected or field not in loaded or expected[field] != loaded[field]:

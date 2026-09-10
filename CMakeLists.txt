@@ -188,6 +188,7 @@ nanobind_add_module(_pyopenms
   ${PYOPENMS_BINDINGS_DIR}/main_module.cpp
 )
 _pyopenms_module_props(_pyopenms)
+target_include_directories(_pyopenms PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/generated")
 
 # --------------------------------------------------------------------------
 # Arrow zero-copy export

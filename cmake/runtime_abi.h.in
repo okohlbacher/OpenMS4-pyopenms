@@ -1,0 +1,16 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Check the consumer's actual compiler/stdlib selection, not its executable path.
+#include <string>
+#if @PYOPENMS_EXPECT_LIBCXX@ && !defined(_LIBCPP_VERSION)
+#error "OpenMS SDK requires libc++"
+#endif
+#if @PYOPENMS_EXPECT_LIBSTDCXX@
+#ifndef __GLIBCXX__
+#error "OpenMS SDK requires libstdc++"
+#endif
+static_assert(_GLIBCXX_USE_CXX11_ABI == @_core_libstdcxx_cxx11_abi@,
+              "OpenMS SDK libstdc++ C++11 ABI mismatch");
+#endif
+#if @PYOPENMS_EXPECT_MSVC@ && !defined(_MSVC_STL_VERSION)
+#error "OpenMS SDK requires MSVC STL"
+#endif

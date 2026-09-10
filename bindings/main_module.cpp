@@ -5,6 +5,7 @@
 #include <OpenMS/SYSTEM/File.h>
 #include <nanobind/nanobind.h>
 #include <nanobind/stl/string.h>
+#include "runtime_abi.h"
 
 namespace nb = nanobind;
 

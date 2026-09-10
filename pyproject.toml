@@ -8,7 +8,7 @@
 # Build with:
 #   pip wheel . --no-build-isolation  (after setting OpenMS_ROOT)
 #   uv build --wheel
-#   pip install . --config-settings=cmake.options.OpenMS_ROOT=/path/to/openms
+#   pip install . --config-settings=override=cmake.options.OpenMS_ROOT=/path/to/openms
 
 [build-system]
 # Also update dependency-group.build when making changes here!!!
@@ -155,7 +155,7 @@ install_components = ["python_modules"]
 
 [tool.py-build-cmake.cmake.options]
 # CMake options - OpenMS_ROOT should be set via environment or config-settings
-# Example: pip install . --config-settings=cmake.options.OpenMS_ROOT=/path/to/openms
+# Example: pip install . --config-settings=override=cmake.options.OpenMS_ROOT=/path/to/openms
 # Or set environment variable: export OpenMS_ROOT=/path/to/openms
 #
 # Skip dependency bundling - wheel repair tools will usually handle this

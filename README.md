@@ -30,7 +30,7 @@ Once builds are authorized and the SDK exists:
 
 ```sh
 python -m pip wheel . --no-build-isolation --no-deps \
-  --config-settings=cmake.options.OpenMS_DIR=/sdk/lib/cmake/OpenMS
+  --config-settings=override=cmake.options.OpenMS_DIR=/sdk/lib/cmake/OpenMS
 ```
 
 `OpenMS_DIR` names the directory containing the installed `OpenMSConfig.cmake`.
@@ -42,7 +42,8 @@ Archive builds must explicitly supply `OPENMS4_SOURCE_REVISION` and
 `OPENMS4_REQUIRE_CLEAN_SOURCE=ON` rejects dirty sources for publishable builds.
 The wheel backend defaults to Release, so use a matching Release SDK for that
 command. For Debug development, configure CMake directly with
-`-DCMAKE_BUILD_TYPE=Debug` against the Debug SDK.
+`-DCMAKE_BUILD_TYPE=Debug` against the Debug SDK, or pass the wheel backend
+`--config-settings=override=cmake.build_type=Debug`.
 
 Wheels bundle the SDK's runtime data under `pyopenms/share/OpenMS`. Setting
 `NO_SHARE=ON` opts out; then set `OPENMS_DATA_PATH` explicitly to the compatible
@@ -129,7 +130,7 @@ same data plus the Core build identity without requiring execution of wheel code
 
 Before scientific modules load, the small native entry module reports the loaded
 Core's `VersionInfo.getBuildInfo()`. Import rejects source, architecture,
-configuration, feature or public-dependency differences from the embedded Core
+configuration, standard-library/CRT ABI, feature or public-dependency differences from the embedded Core
 identity. Compiler patch versions and class-test configuration are recorded but
 do not by themselves imply an ABI difference. `__openms_runtime_build_info__`
 exposes the accepted loaded identity. Artifact hashes and native wheel tests

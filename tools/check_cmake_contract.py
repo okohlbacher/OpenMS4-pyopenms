@@ -54,6 +54,7 @@ set(CMAKE_CXX_COMPILER_WORKS TRUE)
                   system_name=platform.system(), system_processor=platform.machine(), build_type='Debug',
                   cxx_standard=23, shared_libs=True, cxx_compiler_id='Clang', cxx_compiler_version='17.0.0',
                   features={'openswath':True}, dependencies={})
+    identity.update(standard_library='libc++', libstdcxx_cxx11_abi=None, msvc_runtime_library=None)
     results=[]
     for name,tests,revision in [('normal',False,'1'*40),('tests',True,'1'*40),('wrong-revision',False,'2'*40),('wrong-build-type',False,'1'*40),('wrong-architecture',False,'1'*40),('missing-feature',False,'1'*40)]:
         lock=json.loads((src/'dependencies.lock.json').read_text()); lock['dependencies']['OpenMS']['source_revision']=revision
