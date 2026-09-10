@@ -1,0 +1,1277 @@
+{
+  "upstream": "https://github.com/OpenMS/OpenMS",
+  "commit": "ca32296038839459d8c9b075b759e285913d6294",
+  "package": "pyopenms",
+  "imported_files": [
+    {
+      "upstream": "src/pyOpenMS/CLAUDE.md",
+      "package": "pyopenms",
+      "path": "CLAUDE.md"
+    },
+    {
+      "upstream": "src/pyOpenMS/CMakeLists.txt",
+      "package": "pyopenms",
+      "path": "CMakeLists.txt"
+    },
+    {
+      "upstream": "src/pyOpenMS/MANIFEST.in",
+      "package": "pyopenms",
+      "path": "MANIFEST.in"
+    },
+    {
+      "upstream": "src/pyOpenMS/OWNERSHIP.md",
+      "package": "pyopenms",
+      "path": "OWNERSHIP.md"
+    },
+    {
+      "upstream": "src/pyOpenMS/README.md",
+      "package": "pyopenms",
+      "path": "README.md"
+    },
+    {
+      "upstream": "src/pyOpenMS/README.rst",
+      "package": "pyopenms",
+      "path": "README.rst"
+    },
+    {
+      "upstream": "src/pyOpenMS/README_WRAPPING_NEW_CLASSES.md",
+      "package": "pyopenms",
+      "path": "README_WRAPPING_NEW_CLASSES.md"
+    },
+    {
+      "upstream": "src/pyOpenMS/THREAD_SAFETY.md",
+      "package": "pyopenms",
+      "path": "THREAD_SAFETY.md"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/arrow_zerocopy.cpp",
+      "package": "pyopenms",
+      "path": "bindings/arrow_zerocopy.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_analysis.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_analysis.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_chemistry.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_chemistry.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_chromatogram.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_chromatogram.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_datastructures.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_datastructures.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_experiment.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_experiment.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_featurefinder.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_featurefinder.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_format.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_format.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_kernel.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_kernel.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_metadata.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_metadata.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_misc.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_misc.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_ml.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_ml.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_processing.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_processing.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/bind_spectrum.cpp",
+      "package": "pyopenms",
+      "path": "bindings/bind_spectrum.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/binding_utils.h",
+      "package": "pyopenms",
+      "path": "bindings/binding_utils.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/index_value_iterator.h",
+      "package": "pyopenms",
+      "path": "bindings/index_value_iterator.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/main_module.cpp",
+      "package": "pyopenms",
+      "path": "bindings/main_module.cpp"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/peak_layout.h",
+      "package": "pyopenms",
+      "path": "bindings/peak_layout.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/all_casters.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/all_casters.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/nanobind_ms_data_consumer.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/nanobind_ms_data_consumer.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/openms_datavalue_caster.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/openms_datavalue_caster.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/openms_dposition_caster.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/openms_dposition_caster.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/openms_stl_caster.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/openms_stl_caster.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/openms_string_caster.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/openms_string_caster.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/bindings/type_casters/std_string_bytes_caster.h",
+      "package": "pyopenms",
+      "path": "bindings/type_casters/std_string_bytes_caster.h"
+    },
+    {
+      "upstream": "src/pyOpenMS/check_test_coverage.py",
+      "package": "pyopenms",
+      "path": "check_test_coverage.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/fix_stubs.py",
+      "package": "pyopenms",
+      "path": "fix_stubs.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/mac_fix_dependencies.rb",
+      "package": "pyopenms",
+      "path": "mac_fix_dependencies.rb"
+    },
+    {
+      "upstream": "src/pyOpenMS/performance.rst",
+      "package": "pyopenms",
+      "path": "performance.rst"
+    },
+    {
+      "upstream": "src/pyOpenMS/pxds/ConsensusMapArrowIO.pxd",
+      "package": "pyopenms",
+      "path": "pxds/ConsensusMapArrowIO.pxd"
+    },
+    {
+      "upstream": "src/pyOpenMS/pxds/FeatureMapArrowIO.pxd",
+      "package": "pyopenms",
+      "path": "pxds/FeatureMapArrowIO.pxd"
+    },
+    {
+      "upstream": "src/pyOpenMS/pxds/OpenSearchModificationAnalysis.pxd",
+      "package": "pyopenms",
+      "path": "pxds/OpenSearchModificationAnalysis.pxd"
+    },
+    {
+      "upstream": "src/pyOpenMS/pxds/ProteinIdentificationArrowIO.pxd",
+      "package": "pyopenms",
+      "path": "pxds/ProteinIdentificationArrowIO.pxd"
+    },
+    {
+      "upstream": "src/pyOpenMS/pxds/QPXFile.pxd",
+      "package": "pyopenms",
+      "path": "pxds/QPXFile.pxd"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/CTDsupport.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/CTDsupport.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/FeatureLinkerUnlabeledQT.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/FeatureLinkerUnlabeledQT.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/FileConverter.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/FileConverter.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/IDMapper.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/IDMapper.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/MRMMapper.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/MRMMapper.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/MRMTransitionGroupPicker.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/MRMTransitionGroupPicker.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/MRMTransitionGroupScorer.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/MRMTransitionGroupScorer.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/MapAlignerPoseClustering.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/MapAlignerPoseClustering.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/OpenSwathChromatogramExtractor.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/OpenSwathChromatogramExtractor.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/OpenSwathFeatureXMLToTSV.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/OpenSwathFeatureXMLToTSV.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/OpenSwathRTNormalizer.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/OpenSwathRTNormalizer.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/PeakPickerHiRes.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/PeakPickerHiRes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/common.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/common.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/common.pyc",
+      "package": "pyopenms",
+      "path": "pyTOPP/common.pyc"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/pyTOPPExample.py",
+      "package": "pyopenms",
+      "path": "pyTOPP/pyTOPPExample.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyTOPP/run_pipeline.sh",
+      "package": "pyopenms",
+      "path": "pyTOPP/run_pipeline.sh"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/Constants.py",
+      "package": "pyopenms",
+      "path": "pyopenms/Constants.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/__init__.py",
+      "package": "pyopenms",
+      "path": "pyopenms/__init__.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/_dataframes.py",
+      "package": "pyopenms",
+      "path": "pyopenms/_dataframes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/_dataframes_compat.py",
+      "package": "pyopenms",
+      "path": "pyopenms/_dataframes_compat.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/_python_extras.py",
+      "package": "pyopenms",
+      "path": "pyopenms/_python_extras.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/_sysinfo.py",
+      "package": "pyopenms",
+      "path": "pyopenms/_sysinfo.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/__init__.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/__init__.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/consensusmap.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/consensusmap.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/convexhull.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/convexhull.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/datavalue_class.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/datavalue_class.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/deprecated_aliases.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/deprecated_aliases.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/deprecated_mv_aliases.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/deprecated_mv_aliases.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/featurefinderalgorithmmetaboident.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/featurefinderalgorithmmetaboident.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/featuremap.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/featuremap.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/idxmlfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/idxmlfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/math_class.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/math_class.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/metainfointerface.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/metainfointerface.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/mobilogram.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/mobilogram.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/mrmtransitiongroupcp.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/mrmtransitiongroupcp.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/mschromatogram.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/mschromatogram.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/msexperiment.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/msexperiment.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/msspectrum.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/msspectrum.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/mzidentmlfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/mzidentmlfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/peak1d.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/peak1d.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/peptideidentificationlist.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/peptideidentificationlist.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/pepxmlfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/pepxmlfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/proforma.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/proforma.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/singletons.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/singletons.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/spectrafilters.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/spectrafilters.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/string_class.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/string_class.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/xicparquetfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/xicparquetfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/ximparquetfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/ximparquetfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/addons/xipmparquetfile.py",
+      "package": "pyopenms",
+      "path": "pyopenms/addons/xipmparquetfile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/plotting.py",
+      "package": "pyopenms",
+      "path": "pyopenms/plotting.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms/py.typed",
+      "package": "pyopenms",
+      "path": "pyopenms/py.typed"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms_copy_deps.cmake",
+      "package": "pyopenms",
+      "path": "pyopenms_copy_deps.cmake"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyproject.toml",
+      "package": "pyopenms",
+      "path": "pyproject.toml"
+    },
+    {
+      "upstream": "src/pyOpenMS/run_valgrind.sh",
+      "package": "pyopenms",
+      "path": "run_valgrind.sh"
+    },
+    {
+      "upstream": "src/pyOpenMS/stubs.patch",
+      "package": "pyopenms",
+      "path": "stubs.patch"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/__init__.py",
+      "package": "pyopenms",
+      "path": "tests/__init__.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/benchmark_pyopenms.py",
+      "package": "pyopenms",
+      "path": "tests/benchmark_pyopenms.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/compare_api.py",
+      "package": "pyopenms",
+      "path": "tests/compare_api.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/conftest.py",
+      "package": "pyopenms",
+      "path": "tests/conftest.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/extract_api.py",
+      "package": "pyopenms",
+      "path": "tests/extract_api.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/integration_tests/test_MRMRTNormalizer.py",
+      "package": "pyopenms",
+      "path": "tests/integration_tests/test_MRMRTNormalizer.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/memoryleaktests/.gitignore",
+      "package": "pyopenms",
+      "path": "tests/memoryleaktests/.gitignore"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/memoryleaktests/__init__.py",
+      "package": "pyopenms",
+      "path": "tests/memoryleaktests/__init__.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/memoryleaktests/testAll.py",
+      "package": "pyopenms",
+      "path": "tests/memoryleaktests/testAll.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/temp_test.ini",
+      "package": "pyopenms",
+      "path": "tests/temp_test.ini"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.featureXML",
+      "package": "pyopenms",
+      "path": "tests/test.featureXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.ini",
+      "package": "pyopenms",
+      "path": "tests/test.ini"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.mzData",
+      "package": "pyopenms",
+      "path": "tests/test.mzData"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.mzML",
+      "package": "pyopenms",
+      "path": "tests/test.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.mzXML",
+      "package": "pyopenms",
+      "path": "tests/test.mzXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.param",
+      "package": "pyopenms",
+      "path": "tests/test.param"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test.transformationXML",
+      "package": "pyopenms",
+      "path": "tests/test.transformationXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test1.mzData",
+      "package": "pyopenms",
+      "path": "tests/test1.mzData"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test1.mzML",
+      "package": "pyopenms",
+      "path": "tests/test1.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test1.mzXML",
+      "package": "pyopenms",
+      "path": "tests/test1.mzXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test_ProForma.py",
+      "package": "pyopenms",
+      "path": "tests/test_ProForma.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test_matrix_zerocopy.py",
+      "package": "pyopenms",
+      "path": "tests/test_matrix_zerocopy.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/test_modification_discovery.py",
+      "package": "pyopenms",
+      "path": "tests/test_modification_discovery.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1_ION.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1_ION.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1_MS1_ION.tsv",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1_MS1_ION.tsv"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1_MS1_MassQL_ION.tsv",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1_MS1_MassQL_ION.tsv"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1_MS2_MassQL.tsv",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1_MS2_MassQL.tsv"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/BSA1_F1_idmapped.featureXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/BSA1_F1_idmapped.featureXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/ExperimentalDesign_input_2.tsv",
+      "package": "pyopenms",
+      "path": "tests/unittests/ExperimentalDesign_input_2.tsv"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/ProteinQuantifier_input.consensusXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/ProteinQuantifier_input.consensusXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/ProteinQuantifier_input.featureXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/ProteinQuantifier_input.featureXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/__init__.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/__init__.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/collections_.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/collections_.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/conftest.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/conftest.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.TraML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.TraML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.featureXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.featureXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.idXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.idXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.indexed.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.indexed.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.ini",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.ini"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.mzid",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.mzid"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.mzxML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.mzxML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.param",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.param"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.pep.xml",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.pep.xml"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test.transformationXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test.transformationXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test000.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test000.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test1.mzData",
+      "package": "pyopenms",
+      "path": "tests/unittests/test1.mzData"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test1.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test1.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test1.mzXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test1.mzXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test2.mzML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test2.mzML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test2.mzXML",
+      "package": "pyopenms",
+      "path": "tests/unittests/test2.mzXML"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/testCVTermList.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/testCVTermList.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/testLightTargetedExperiment.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/testLightTargetedExperiment.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/testLocale.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/testLocale.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/testSpecialCases.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/testSpecialCases.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/testSpectrumNativeIDParser.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/testSpectrumNativeIDParser.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_AcquisitionInfo.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_AcquisitionInfo.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_BaselineFiltering.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_BaselineFiltering.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_BilinearInterpolation.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_BilinearInterpolation.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_BrukerTimsFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_BrukerTimsFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ChemistryBindings.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ChemistryBindings.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ChromatogramExtractor.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ChromatogramExtractor.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ChromatogramExtractorAlgorithm.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ChromatogramExtractorAlgorithm.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Convexhull.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Convexhull.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_DIAScoring.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_DIAScoring.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_DRange.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_DRange.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_DataProcessing.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_DataProcessing.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FAIMSHelper.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FAIMSHelper.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FLASHDeconv.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FLASHDeconv.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FeatureFinderAlgorithmMetaboIdent_df.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FeatureFinderAlgorithmMetaboIdent_df.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FileIO.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FileIO.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FileInfo.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FileInfo.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_FileTypes.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_FileTypes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Hash.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Hash.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_IDMapper.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_IDMapper.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ISpectrumAccess.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ISpectrumAccess.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ImzMLFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ImzMLFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ImzMLFile_modes.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ImzMLFile_modes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_InstrumentSettings.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_InstrumentSettings.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_IonMobilityData.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_IonMobilityData.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Isobaric_Quantitation.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Isobaric_Quantitation.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MRMFeatureFinderScoring.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MRMFeatureFinderScoring.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MSExperiment_rasterizeRTMZ.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MSExperiment_rasterizeRTMZ.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MSNumpressCoder.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MSNumpressCoder.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MSSpectrum.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MSSpectrum.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MSSpectrum_rasterizeIMFrame.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MSSpectrum_rasterizeIMFrame.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Math.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Math.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Mobilogram.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Mobilogram.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MultipleTesting.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MultipleTesting.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MzMLConsumer.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MzMLConsumer.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_MzXMLConsumer.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_MzXMLConsumer.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_OpenSwathDataStructures.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_OpenSwathDataStructures.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_PeakMapExtractor.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_PeakMapExtractor.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_PeptideAndProteinQuant.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_PeptideAndProteinQuant.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Percolator.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Percolator.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ProteaseDigestion.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ProteaseDigestion.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_RankData.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_RankData.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_SequenceCoverage.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_SequenceCoverage.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Smoothing.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Smoothing.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_SpectraFilter.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_SpectraFilter.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_SpectrumAccessOpenMS.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_SpectrumAccessOpenMS.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_SpectrumRangeManager.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_SpectrumRangeManager.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_StandardTypes.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_StandardTypes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_StaticMethods.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_StaticMethods.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_TargetedQuantitation.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_TargetedQuantitation.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ThermoRawFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ThermoRawFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_TraML.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_TraML.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_USI.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_USI.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_Utf8StringInput.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_Utf8StringInput.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_XICParquetFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_XICParquetFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_XIMParquetFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_XIMParquetFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_XIPMParquetFile.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_XIPMParquetFile.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_api_missing_classes.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_api_missing_classes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_api_missing_enums.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_api_missing_enums.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_api_missing_methods.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_api_missing_methods.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_api_singletons.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_api_singletons.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_arrow_io_classes.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_arrow_io_classes.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_arrow_zerocopy.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_arrow_zerocopy.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_arrow_zerocopy_lifetime.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_arrow_zerocopy_lifetime.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_backward_compatibility.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_backward_compatibility.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_borrowed_reference_lifetime.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_borrowed_reference_lifetime.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_chaining_semantics.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_chaining_semantics.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_consumer_callback_lifetime.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_consumer_callback_lifetime.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_copy_constructors.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_copy_constructors.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_copy_independence.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_copy_independence.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_data_paths.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_data_paths.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_dataframe_columns.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_dataframe_columns.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_deprecated_dataframe_shims.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_deprecated_dataframe_shims.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_docstring_format.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_docstring_format.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_docstrings.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_docstrings.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_element_access_semantics.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_element_access_semantics.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_feature_dataframe.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_feature_dataframe.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_imaging.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_imaging.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_ion_mobility_unit.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_ion_mobility_unit.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_iterator_lifetime.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_iterator_lifetime.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_iterator_mutation_safety.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_iterator_mutation_safety.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_mobilogram_struct_view.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_mobilogram_struct_view.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_mschromatogram_struct_view.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_mschromatogram_struct_view.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_numpy_getter_lifetime.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_numpy_getter_lifetime.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_output_parameters.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_output_parameters.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_peak1d.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_peak1d.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_psm_dataframe.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_psm_dataframe.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_pyarrow_compatibility.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_pyarrow_compatibility.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_select_bounds.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_select_bounds.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_set_ion_mobility.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_set_ion_mobility.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_set_peaks_metadata_alignment.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_set_peaks_metadata_alignment.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_snake_case_properties.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_snake_case_properties.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_spectrum_zerocopy.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_spectrum_zerocopy.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_tutorial.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_tutorial.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_type_casters.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_type_casters.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_view_accessors.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_view_accessors.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/tests/unittests/test_zerocopy_conventions.py",
+      "package": "pyopenms",
+      "path": "tests/unittests/test_zerocopy_conventions.py"
+    },
+    {
+      "upstream": "src/pyOpenMS/valgrind-python.supp",
+      "package": "pyopenms",
+      "path": "valgrind-python.supp"
+    },
+    {
+      "upstream": "License.txt",
+      "package": "pyopenms",
+      "path": "License.txt"
+    },
+    {
+      "upstream": "AUTHORS",
+      "package": "pyopenms",
+      "path": "AUTHORS"
+    },
+    {
+      "upstream": ".clang-format",
+      "package": "pyopenms",
+      "path": ".clang-format"
+    }
+  ]
+}

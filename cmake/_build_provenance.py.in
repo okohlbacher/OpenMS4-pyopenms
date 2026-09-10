@@ -1,0 +1,4 @@
+"""Build-time identity of the installed core SDK used for this wheel."""
+PACKAGE_VERSION = "@PYOPENMS_PACKAGE_VERSION@"
+CORE_VERSION = "@OpenMS_VERSION@"
+CORE_SOURCE_REVISION = "@OpenMS_SOURCE_REVISION@"
