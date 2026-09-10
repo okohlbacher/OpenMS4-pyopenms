@@ -59,21 +59,27 @@ set(CMAKE_CXX_COMPILER_WORKS TRUE)
                   features={'openswath':True}, dependencies={})
     identity.update(standard_library='libc++', libstdcxx_cxx11_abi=None, msvc_runtime_library=None)
     results=[]
-    for name,tests,revision in [('normal',False,'1'*40),('tests',True,'1'*40),('wrong-revision',False,'2'*40),('wrong-build-type',False,'1'*40),('wrong-architecture',False,'1'*40),('missing-feature',False,'1'*40)]:
+    for name,tests,revision in [('normal',False,'1'*40),('tests',True,'1'*40),('core-only',False,'1'*40),('wrong-backend',False,'1'*40),('wrong-revision',False,'2'*40),('wrong-build-type',False,'1'*40),('wrong-architecture',False,'1'*40),('missing-feature',False,'1'*40)]:
         lock=json.loads((src/'dependencies.lock.json').read_text()); lock['dependencies']['OpenMS']['source_revision']=revision
+        lock['dependencies']['OpenMSFLASH']['source_revision']='2'*40 if name in ('wrong-backend','core-only') else '1'*40
         (src/'dependencies.lock.json').write_text(json.dumps(lock))
         info=dict(identity)
         if name=='wrong-architecture': info['system_processor']='invalid-arch'
         if name=='missing-feature': info['features']={'openswath':False}
         (prefix/'OpenMSBuildInfo.json').write_text(json.dumps(info))
         cmd=['cmake' ,'-S',str(src),'-B',str(base/name),f'-DCMAKE_TOOLCHAIN_FILE={toolchain}',f'-DCMAKE_BUILD_TYPE={"Release" if name=="wrong-build-type" else "Debug"}',f'-DOPENMS4_SOURCE_REVISION={"3"*40}','-DOPENMS4_SOURCE_DIRTY=OFF',f'-DCMAKE_MODULE_PATH={modules}',f'-DCMAKE_PREFIX_PATH={prefix}','-DPYOPENMS_GENERATE_STUBS=OFF',f'-DPYOPENMS_BUILD_TESTING={"ON" if tests else "OFF"}']
+        if name=='core-only':
+            cmd+=['-DPYOPENMS_WITH_PROSE=OFF','-DPYOPENMS_WITH_FLASH=OFF','-DCMAKE_DISABLE_FIND_PACKAGE_OpenMSProSE=ON','-DCMAKE_DISABLE_FIND_PACKAGE_OpenMSFLASH=ON']
         result=subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        errors={'wrong-revision':'SDK revision mismatch','wrong-build-type':'build configuration mismatch',
+        errors={'wrong-backend':'SDK revision mismatch','wrong-revision':'SDK revision mismatch','wrong-build-type':'build configuration mismatch',
                 'wrong-architecture':'architecture mismatch','missing-feature':'requires the OpenSWATH SDK feature'}
         ok=(result.returncode!=0 and errors[name] in result.stdout) if name in errors else result.returncode==0
         print(name, 'PASS' if ok else 'FAIL', result.returncode)
         print(result.stdout[-2500:])
         results.append(ok)
+        if name=='core-only' and result.returncode==0:
+            provenance=json.loads((base/name/'pyOpenMS/pyopenms/_build_provenance.json').read_text())
+            assert provenance['tool_backends']=={}
         if name=='normal' and result.returncode==0:
             staged=base/name/'pyOpenMS/pyopenms'
             provenance=json.loads((staged/'_build_provenance.json').read_text())
