@@ -500,10 +500,15 @@ def test_residuedb_getmodifiedresidue_rejects_unregistered_modification():
 
 def test_residuedb_getmodifiedresidue_accepts_database_modification():
     db = pyopenms.ResidueDB()
-    mod = pyopenms.ModificationsDB().getModification("Oxidation")
+    # The bare name also matches oxidation of other residues (for example D).
+    mod = pyopenms.ModificationsDB().getModification(
+        "Oxidation", "M", pyopenms.ResidueModification.TermSpecificity.ANYWHERE
+    )
     res = db.getModifiedResidue(db.getResidue("Methionine"), mod)
     assert res is not None
     assert res.isModified()
+    assert res.getOneLetterCode() == "M"
+    assert res.getModification().getFullId() == mod.getFullId()
 
 
 # ---------------------------------------------------------------------------
