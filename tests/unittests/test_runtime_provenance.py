@@ -19,6 +19,12 @@ def test_loaded_core_matches_embedded_wheel_identity():
     assert oms.__source_dirty__ == provenance["source_dirty"]
 
 
+def test_optional_raw_bindings_match_the_installed_sdk_features():
+    features = oms.__openms_runtime_build_info__["features"]
+    assert hasattr(oms, "BrukerTimsFile") == features["opentims"]
+    assert hasattr(oms, "ThermoRawFile") == features["thermo_raw"]
+
+
 def test_bad_data_override_can_be_caught_and_import_retried(tmp_path):
     env = dict(os.environ, OPENMS_DATA_PATH=str(tmp_path / "missing"),
                PYOPENMS_VALID_DATA_PATH=oms.File.getOpenMSDataPath())

@@ -6,7 +6,9 @@
 #include <OpenMS/DATASTRUCTURES/DRange.h>
 #include <OpenMS/FORMAT/AbsoluteQuantitationStandardsFile.h>
 #include <OpenMS/FORMAT/Base64.h>
+#ifdef WITH_OPENTIMS
 #include <OpenMS/FORMAT/BrukerTimsFile.h>
+#endif
 #ifdef WITH_THERMO_RAW
 #include <OpenMS/FORMAT/ThermoRawFile.h>
 #endif
