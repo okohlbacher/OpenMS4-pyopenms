@@ -238,6 +238,32 @@ class TestFeatureMapArrowIOParquet:
 
 class TestFeatureMapArrowZerocopy:
 
+    def test_empty_features_import(self, feature_map):
+        table = featuremap_features_to_arrow(feature_map).slice(0, 0)
+        restored = oms.FeatureMap()
+        assert featuremap_import_features_from_arrow(table, restored)
+        assert restored.size() == 0
+
+    def test_every_stream_batch_is_imported(self, feature_map):
+        table = featuremap_features_to_arrow(feature_map)
+        batches = table.to_batches(max_chunksize=1)
+        assert len(batches) == 2
+        consumed = []
+
+        class Stream:
+            def __arrow_c_stream__(self):
+                def rows():
+                    for batch in batches:
+                        consumed.append(batch.num_rows)
+                        yield batch
+                return pa.RecordBatchReader.from_batches(table.schema, rows()).__arrow_c_stream__()
+
+        restored = oms.FeatureMap()
+        assert featuremap_import_features_from_arrow(Stream(), restored)
+        assert consumed == [1, 1]
+        assert restored.size() == 2
+        assert [restored[i].getRT() for i in range(2)] == [100.0, 200.0]
+
     def test_features_to_arrow_returns_table(self, feature_map):
         table = featuremap_features_to_arrow(feature_map)
         assert isinstance(table, pa.Table)

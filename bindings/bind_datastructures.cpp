@@ -1048,6 +1048,9 @@ sum1 and sum2 are the sum of the intensities squared for each peak of both spect
         .def_static("getVersion", []() { return OpenMS::VersionInfo::getVersion(); })
         .def_static("getVersionStruct", []() { return OpenMS::VersionInfo::getVersionStruct(); })
         .def_static("getRevision", []() { return OpenMS::VersionInfo::getRevision(); })
+        .def_static("getSourceRevision", &OpenMS::VersionInfo::getSourceRevision)
+        .def_static("isSourceDirty", &OpenMS::VersionInfo::isSourceDirty)
+        .def_static("getBuildInfo", &OpenMS::VersionInfo::getBuildInfo)
         .def_static("getBranch", []() { return OpenMS::VersionInfo::getBranch(); })
         ;
 

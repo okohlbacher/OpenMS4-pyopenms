@@ -179,11 +179,6 @@
       "path": "fix_stubs.py"
     },
     {
-      "upstream": "src/pyOpenMS/mac_fix_dependencies.rb",
-      "package": "pyopenms",
-      "path": "mac_fix_dependencies.rb"
-    },
-    {
       "upstream": "src/pyOpenMS/performance.rst",
       "package": "pyopenms",
       "path": "performance.rst"
@@ -462,11 +457,6 @@
       "upstream": "src/pyOpenMS/pyopenms/py.typed",
       "package": "pyopenms",
       "path": "pyopenms/py.typed"
-    },
-    {
-      "upstream": "src/pyOpenMS/pyopenms_copy_deps.cmake",
-      "package": "pyopenms",
-      "path": "pyopenms_copy_deps.cmake"
     },
     {
       "upstream": "src/pyOpenMS/pyproject.toml",
@@ -1273,6 +1263,22 @@
     {
       "upstream": "src/pyOpenMS/pyTOPP/common.pyc",
       "reason": "Legacy compiled Python cache; common.py source is retained."
+    }
+  ],
+  "retired_packaging_files": [
+    {
+      "upstream": "src/pyOpenMS/mac_fix_dependencies.rb",
+      "package": "pyopenms",
+      "path": "mac_fix_dependencies.rb",
+      "reason": "Retired unused monorepo dependency copying; use auditwheel/delocate/delvewheel against the pinned installed SDK.",
+      "status": "removed"
+    },
+    {
+      "upstream": "src/pyOpenMS/pyopenms_copy_deps.cmake",
+      "package": "pyopenms",
+      "path": "pyopenms_copy_deps.cmake",
+      "reason": "Retired unused monorepo dependency copying; use auditwheel/delocate/delvewheel against the pinned installed SDK.",
+      "status": "removed"
     }
   ]
 }

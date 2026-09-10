@@ -13,9 +13,7 @@
 #include <nanobind/stl/string.h>
 #include <nanobind/stl/vector.h>
 
-#include <arrow/c/abi.h>
-#include <arrow/c/bridge.h>
-#include <arrow/api.h>
+#include "arrow_table.h"
 #include <OpenMS/KERNEL/MSExperiment.h>
 #include <OpenMS/KERNEL/FeatureMap.h>
 #include <OpenMS/KERNEL/ConsensusMap.h>
@@ -25,139 +23,18 @@
 #include <OpenMS/FORMAT/ConsensusMapArrowIO.h>
 #include <OpenMS/FORMAT/ProteinIdentificationArrowIO.h>
 
-#include <cstdlib>
-#include <cstring>
 
 namespace nb = nanobind;
-
-// Helper: RAII guard for malloc'd Arrow structs
-struct ArrowGuard {
-    ArrowSchema* schema;
-    ArrowArray* array;
-
-    ArrowGuard()
-        : schema(static_cast<ArrowSchema*>(std::malloc(sizeof(ArrowSchema)))),
-          array(static_cast<ArrowArray*>(std::malloc(sizeof(ArrowArray))))
-    {
-        if (!schema || !array) {
-            std::free(schema);
-            std::free(array);
-            throw std::bad_alloc();
-        }
-        std::memset(schema, 0, sizeof(ArrowSchema));
-        std::memset(array, 0, sizeof(ArrowArray));
-    }
-
-    ~ArrowGuard() {
-        if (schema) {
-            if (schema->release) schema->release(schema);
-            std::free(schema);
-        }
-        if (array) {
-            if (array->release) array->release(array);
-            std::free(array);
-        }
-    }
-
-    // Release ownership (after PyArrow takes over)
-    void release() {
-        // PyArrow now owns the Arrow data; just free the malloc'd structs
-        // without calling the release callbacks
-        std::free(schema);
-        std::free(array);
-        schema = nullptr;
-        array = nullptr;
-    }
-
-    ArrowGuard(const ArrowGuard&) = delete;
-    ArrowGuard& operator=(const ArrowGuard&) = delete;
-};
-
-// Import a filled ArrowSchema+ArrowArray into a PyArrow Table
-static nb::object import_to_pyarrow(ArrowGuard& guard) {
-    nb::module_ pa = nb::module_::import_("pyarrow");
-
-    // _import_from_c expects integer addresses
-    auto batch = pa.attr("RecordBatch").attr("_import_from_c")(
-        reinterpret_cast<uintptr_t>(guard.array),
-        reinterpret_cast<uintptr_t>(guard.schema)
-    );
-
-    // PyArrow now owns the Arrow data
-    guard.release();
-
-    return pa.attr("Table").attr("from_batches")(nb::make_tuple(batch));
-}
-
-// Convert a C++ arrow::Table to a PyArrow Table via the C Data Interface.
-// The table is combined into a single RecordBatch, exported to C structs,
-// then imported by PyArrow (zero-copy).
-static nb::object table_to_pyarrow(const std::shared_ptr<arrow::Table>& table) {
-    if (!table)
-        throw std::runtime_error("Arrow export returned null table");
-
-    auto batch_result = table->CombineChunksToBatch();
-    if (!batch_result.ok())
-        throw std::runtime_error("Failed to combine Arrow table chunks: " + batch_result.status().ToString());
-
-    auto batch = batch_result.ValueOrDie();
-
-    ArrowGuard guard;
-    auto schema_status = arrow::ExportSchema(*batch->schema(), guard.schema);
-    if (!schema_status.ok())
-        throw std::runtime_error("Failed to export Arrow schema: " + schema_status.ToString());
-
-    auto array_status = arrow::ExportRecordBatch(*batch, guard.array);
-    if (!array_status.ok())
-        throw std::runtime_error("Failed to export Arrow record batch: " + array_status.ToString());
-
-    return import_to_pyarrow(guard);
-}
-
-// Convert a PyArrow Table to a C++ arrow::Table via the C Data Interface.
-static std::shared_ptr<arrow::Table> pyarrow_to_table(nb::object pa_table) {
-    nb::module_ pa = nb::module_::import_("pyarrow");
-
-    // Ensure we have a Table
-    if (!nb::isinstance(pa_table, pa.attr("Table")))
-        throw nb::type_error("Expected a pyarrow.Table");
-
-    // Combine chunks into a single RecordBatch for C Data Interface export
-    nb::object combined = pa_table.attr("combine_chunks")();
-    auto batches = nb::cast<nb::list>(combined.attr("to_batches")());
-    if (batches.size() == 0)
-        throw std::runtime_error("PyArrow table has no record batches");
-    nb::object batch = batches[0];
-
-    // Allocate C structs for export
-    ArrowGuard guard;
-
-    // Export from PyArrow to C Data Interface
-    batch.attr("_export_to_c")(
-        reinterpret_cast<uintptr_t>(guard.array),
-        reinterpret_cast<uintptr_t>(guard.schema)
-    );
-
-    // Import into C++ Arrow (consumes the C structs — release callbacks become null)
-    auto schema_result = arrow::ImportSchema(guard.schema);
-    if (!schema_result.ok())
-        throw std::runtime_error("Failed to import Arrow schema: " + schema_result.status().ToString());
-
-    auto batch_result = arrow::ImportRecordBatch(guard.array, *schema_result);
-    if (!batch_result.ok())
-        throw std::runtime_error("Failed to import Arrow record batch: " + batch_result.status().ToString());
-
-    // C structs have been consumed by Import (release callbacks are now null),
-    // so the guard destructor will just free the malloc'd memory
-    return arrow::Table::Make((*batch_result)->schema(),
-                              (*batch_result)->columns(),
-                              (*batch_result)->num_rows());
-}
+using PyOpenMS::ArrowGuard;
+using PyOpenMS::import_to_pyarrow;
+using PyOpenMS::table_to_pyarrow;
+using PyOpenMS::pyarrow_to_table;
 
 NB_MODULE(_arrow_zerocopy, m) {
-    m.doc() = "Zero-copy Arrow export from OpenMS MSExperiment.\n\n"
-              "This module provides zero-copy export of MS data to Apache Arrow format "
-              "using the Arrow C Data Interface.\n\n"
+    m.doc() = "Arrow conversion for OpenMS data.\n\n"
+              "The C Data/Stream Interface transfers buffer ownership without copying. "
+              "Scientific object conversion and combining output chunks may copy data. "
+              "Imports accept tables or Arrow C stream providers and consume every batch.\n\n"
               ".. warning::\n"
               "    **EXPERIMENTAL API**: This module is experimental and may change.";
 
@@ -310,7 +187,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("feature_map"),
-        "Export FeatureMap features to a PyArrow Table (zero-copy).\n\n"
+        "Export FeatureMap features to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -327,7 +204,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("feature_map"),
-        "Export FeatureMap PSMs to a PyArrow Table (zero-copy).\n\n"
+        "Export FeatureMap PSMs to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -341,7 +218,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return OpenMS::FeatureMapArrowIO::importFeaturesFromArrow(table, fmap);
         },
         nb::arg("table"), nb::arg("feature_map"),
-        "Import features from a PyArrow Table into a FeatureMap (zero-copy).\n\n"
+        "Import features from a PyArrow Table into a FeatureMap (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -355,7 +232,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return OpenMS::FeatureMapArrowIO::importPSMsFromArrow(table, fmap);
         },
         nb::arg("table"), nb::arg("feature_map"),
-        "Import PSMs from a PyArrow Table into a FeatureMap (zero-copy).\n\n"
+        "Import PSMs from a PyArrow Table into a FeatureMap (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -376,7 +253,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("consensus_map"),
-        "Export ConsensusMap features to a PyArrow Table (zero-copy).\n\n"
+        "Export ConsensusMap features to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -393,7 +270,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("consensus_map"),
-        "Export ConsensusMap PSMs to a PyArrow Table (zero-copy).\n\n"
+        "Export ConsensusMap PSMs to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -407,7 +284,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return OpenMS::ConsensusMapArrowIO::importFeaturesFromArrow(table, cmap);
         },
         nb::arg("table"), nb::arg("consensus_map"),
-        "Import features from a PyArrow Table into a ConsensusMap (zero-copy).\n\n"
+        "Import features from a PyArrow Table into a ConsensusMap (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -421,7 +298,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return OpenMS::ConsensusMapArrowIO::importPSMsFromArrow(table, cmap);
         },
         nb::arg("table"), nb::arg("consensus_map"),
-        "Import PSMs from a PyArrow Table into a ConsensusMap (zero-copy).\n\n"
+        "Import PSMs from a PyArrow Table into a ConsensusMap (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -442,7 +319,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("protein_identifications"),
-        "Export protein hits to a PyArrow Table (zero-copy).\n\n"
+        "Export protein hits to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -459,7 +336,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("protein_identifications"),
-        "Export protein groups to a PyArrow Table (zero-copy).\n\n"
+        "Export protein groups to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );
@@ -476,7 +353,7 @@ NB_MODULE(_arrow_zerocopy, m) {
             return table_to_pyarrow(table);
         },
         nb::arg("protein_identifications"),
-        "Export search parameters to a PyArrow Table (zero-copy).\n\n"
+        "Export search parameters to a PyArrow Table (via Arrow C Data Interface).\n\n"
         ".. warning::\n"
         "    **EXPERIMENTAL API**: This function is experimental and may change."
     );

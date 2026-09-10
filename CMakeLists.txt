@@ -46,6 +46,7 @@ endforeach()
 set(OPENMS_TARGET OpenMS::Core)
 set(OPENSWATHALGO_TARGET OpenMS::OpenSwathAlgo)
 set(CF_OPENMS_PACKAGE_VERSION "${OpenMS_VERSION}")
+include(cmake/PyOpenMSBuildIdentity.cmake)
 
 # The SDK owns runtime data. Wheel builds never search a sibling source tree.
 set(OPENMS_SHARE_DIR "${OpenMS_SHARE_DIR}")
@@ -62,6 +63,8 @@ if(NOT _nanobind_result EQUAL 0)
   message(FATAL_ERROR "Install this package's Python build requirements, including nanobind")
 endif()
 find_package(nanobind 2.10.0 EXACT CONFIG REQUIRED)
+# 2.10.0 requires this explicit choice to use its wheel's shipped robin_map.
+set(NB_USE_SUBMODULE_DEPS ON CACHE BOOL "Use dependencies shipped in the pinned nanobind wheel")
 
 if(UNIX AND NOT APPLE AND NOT CYGWIN)
   set(LINUX TRUE)
@@ -234,12 +237,14 @@ _copy_assets("${PROJECT_SOURCE_DIR}/pyopenms/" "py.typed" "${PYOPENMS_BUILD_DIR}
 _copy_assets("${PROJECT_SOURCE_DIR}/pyopenms/addons/" "*.py" "${PYOPENMS_BUILD_DIR}/pyopenms/addons/")
 configure_file("${PROJECT_SOURCE_DIR}/cmake/_build_provenance.py.in"
   "${PYOPENMS_BUILD_DIR}/pyopenms/_build_provenance.py" @ONLY)
+file(WRITE "${PYOPENMS_BUILD_DIR}/pyopenms/_build_provenance.json" "${_pyopenms_provenance}\n")
 
-# Copy share data if requested and directory exists
+# Reconfiguration must remove data left by older, unfiltered staging or NO_SHARE.
+file(REMOVE_RECURSE "${PYOPENMS_BUILD_DIR}/pyopenms/share")
 if(NOT NO_SHARE AND DEFINED OPENMS_SHARE_DIR AND EXISTS "${OPENMS_SHARE_DIR}")
   file(MAKE_DIRECTORY ${PYOPENMS_BUILD_DIR}/pyopenms/share/OpenMS)
   file(COPY "${OPENMS_SHARE_DIR}/" DESTINATION "${PYOPENMS_BUILD_DIR}/pyopenms/share/OpenMS"
-      PATTERN "examples" EXCLUDE)
+      PATTERN "examples" EXCLUDE PATTERN "test-data" EXCLUDE)
 endif()
 
 # --------------------------------------------------------------------------
@@ -264,12 +269,18 @@ endif()
 
 
 # Install the assembled Python package; platform libraries are handled by wheel repair.
+# A reused wheel install prefix must not retain fixtures or a previous NO_SHARE payload.
+install(CODE [[file(REMOVE_RECURSE "$ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/pyopenms/share")]]
+  COMPONENT python_modules)
 install(DIRECTORY "${PYOPENMS_BUILD_DIR}/pyopenms/"
   DESTINATION pyopenms COMPONENT python_modules FILES_MATCHING
   PATTERN "*.py" PATTERN "*.pyi" PATTERN "py.typed" PATTERN "__pycache__" EXCLUDE)
+install(FILES "${PYOPENMS_BUILD_DIR}/pyopenms/_build_provenance.json"
+  DESTINATION pyopenms COMPONENT python_modules)
 if(NOT NO_SHARE)
   install(DIRECTORY "${PYOPENMS_BUILD_DIR}/pyopenms/share"
-    DESTINATION pyopenms COMPONENT python_modules)
+    DESTINATION pyopenms COMPONENT python_modules
+    PATTERN "test-data" EXCLUDE PATTERN "examples" EXCLUDE)
 endif()
 add_custom_target(pyopenms ALL)
 add_dependencies(pyopenms pyopenms_compile)

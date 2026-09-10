@@ -4,15 +4,15 @@
 The fake toolchain uses /usr/bin/true and skips compiler identification. No
 compiler, dependency installation, native build or binary test is executed.
 """
-import json, os, pathlib, shutil, subprocess, tempfile
+import json, os, pathlib, platform, shutil, subprocess, tempfile
 root=pathlib.Path(__file__).resolve().parents[1]
 with tempfile.TemporaryDirectory(prefix='openms4-py-contract-') as td:
     base=pathlib.Path(td); src=base/'source'; src.mkdir(); prefix=base/'sdk'; prefix.mkdir(); modules=base/'modules'; modules.mkdir()
     for p in root.iterdir():
-        if p.name != 'dependencies.lock.json': (src/p.name).symlink_to(p, target_is_directory=p.is_dir())
+        if p.name not in ('dependencies.lock.json', '.git'): (src/p.name).symlink_to(p, target_is_directory=p.is_dir())
     (src/'dependencies.lock.json').write_text(json.dumps({'dependencies':{name:{'version':'4.0.0','source_revision':'1'*40} for name in ['OpenMS','OpenMSTestData']}}))
     share=prefix/'share/OpenMS/4.0.0'; (share/'CHEMISTRY').mkdir(parents=True); (share/'CHEMISTRY/unimod.xml').write_text('<fixture/>')
-    (share/'test-data/core').mkdir(parents=True); topp=prefix/'share/topp'; topp.mkdir(parents=True)
+    (share/'test-data/core').mkdir(parents=True); (share/'test-data/core/test-only-marker.txt').write_text('exclude me'); (share/'examples').mkdir(); (share/'examples/example.txt').write_text('exclude me'); topp=prefix/'share/topp'; topp.mkdir(parents=True)
     for name in ['OpenMS','OpenMSTestData','nanobind']:
         directory=prefix/'lib/cmake'/name; directory.mkdir(parents=True)
         version='2.10.0' if name=='nanobind' else '4.0.0'
@@ -20,6 +20,7 @@ with tempfile.TemporaryDirectory(prefix='openms4-py-contract-') as td:
     (prefix/'lib/cmake/OpenMS/OpenMSConfig.cmake').write_text(f'''
 set(OpenMS_VERSION 4.0.0)
 set(OpenMS_SOURCE_REVISION {'1'*40})
+set(OpenMS_BUILD_INFO_FILE "{prefix}/OpenMSBuildInfo.json")
 set(OpenMS_SHARE_DIR "{share}")
 set(OpenMS_TEST_DATA_DIR "{share}/test-data/core")
 foreach(t Core OpenSwathAlgo)
@@ -49,16 +50,41 @@ set(CMAKE_CXX_COMPILER_ID_RUN TRUE)
 set(CMAKE_CXX_COMPILER_FORCED TRUE)
 set(CMAKE_CXX_COMPILER_WORKS TRUE)
 ''')
+    identity=dict(schema_version=1, source_revision='1'*40, source_dirty=False, version='4.0.0',
+                  system_name=platform.system(), system_processor=platform.machine(), build_type='Debug',
+                  cxx_standard=23, shared_libs=True, cxx_compiler_id='Clang', cxx_compiler_version='17.0.0',
+                  features={'openswath':True}, dependencies={})
     results=[]
-    for name,tests,revision in [('normal',False,'1'*40),('tests',True,'1'*40),('wrong-revision',False,'2'*40)]:
+    for name,tests,revision in [('normal',False,'1'*40),('tests',True,'1'*40),('wrong-revision',False,'2'*40),('wrong-build-type',False,'1'*40),('wrong-architecture',False,'1'*40),('missing-feature',False,'1'*40)]:
         lock=json.loads((src/'dependencies.lock.json').read_text()); lock['dependencies']['OpenMS']['source_revision']=revision
         (src/'dependencies.lock.json').write_text(json.dumps(lock))
-        cmd=['cmake','-S',str(src),'-B',str(base/name),f'-DCMAKE_TOOLCHAIN_FILE={toolchain}',f'-DCMAKE_MODULE_PATH={modules}',f'-DCMAKE_PREFIX_PATH={prefix}','-DPYOPENMS_GENERATE_STUBS=OFF',f'-DPYOPENMS_BUILD_TESTING={"ON" if tests else "OFF"}']
+        info=dict(identity)
+        if name=='wrong-architecture': info['system_processor']='invalid-arch'
+        if name=='missing-feature': info['features']={'openswath':False}
+        (prefix/'OpenMSBuildInfo.json').write_text(json.dumps(info))
+        cmd=['cmake' ,'-S',str(src),'-B',str(base/name),f'-DCMAKE_TOOLCHAIN_FILE={toolchain}',f'-DCMAKE_BUILD_TYPE={"Release" if name=="wrong-build-type" else "Debug"}',f'-DOPENMS4_SOURCE_REVISION={"3"*40}','-DOPENMS4_SOURCE_DIRTY=OFF',f'-DCMAKE_MODULE_PATH={modules}',f'-DCMAKE_PREFIX_PATH={prefix}','-DPYOPENMS_GENERATE_STUBS=OFF',f'-DPYOPENMS_BUILD_TESTING={"ON" if tests else "OFF"}']
         result=subprocess.run(cmd, text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-        ok=(result.returncode==0) if name!='wrong-revision' else (result.returncode!=0 and 'SDK revision mismatch' in result.stdout)
+        errors={'wrong-revision':'SDK revision mismatch','wrong-build-type':'build configuration mismatch',
+                'wrong-architecture':'architecture mismatch','missing-feature':'requires the OpenSWATH SDK feature'}
+        ok=(result.returncode!=0 and errors[name] in result.stdout) if name in errors else result.returncode==0
         print(name, 'PASS' if ok else 'FAIL', result.returncode)
         print(result.stdout[-2500:])
         results.append(ok)
+        if name=='normal' and result.returncode==0:
+            staged=base/name/'pyOpenMS/pyopenms'
+            provenance=json.loads((staged/'_build_provenance.json').read_text())
+            assert provenance['source_revision']=='3'*40 and provenance['source_dirty'] is False
+            assert provenance['core']==identity
+            assert (staged/'share/OpenMS/CHEMISTRY/unimod.xml').is_file()
+            assert not (staged/'share/OpenMS/test-data').exists()
+            assert not (staged/'share/OpenMS/examples').exists()
+            stale=staged/'share/OpenMS/test-data/core';stale.mkdir(parents=True)
+            (stale/'stale-test-only-marker.txt').write_text('old wheel staging')
+            subprocess.run(cmd,check=True,stdout=subprocess.DEVNULL)
+            assert not (staged/'share/OpenMS/test-data').exists()
+            subprocess.run(cmd+['-DNO_SHARE=ON'],check=True,stdout=subprocess.DEVNULL)
+            assert not (staged/'share').exists()
+            print('runtime data excludes fixtures and clears reused staging: PASS')
         if tests and result.returncode==0:
             listing=subprocess.run(['ctest','--test-dir',str(base/name),'-N'],text=True,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
             print(listing.stdout)

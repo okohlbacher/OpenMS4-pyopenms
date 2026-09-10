@@ -33,6 +33,9 @@ from ._build_provenance import (
     PACKAGE_VERSION as __version__,
     CORE_VERSION as __openms_core_version__,
     CORE_SOURCE_REVISION as __openms_core_revision__,
+    PACKAGE_SOURCE_REVISION as __source_revision__,
+    PACKAGE_SOURCE_DIRTY as __source_dirty__,
+    CORE_BUILD_INFO as __openms_core_build_info__,
 )
 
 here = os.path.abspath(os.path.dirname(__file__))
@@ -209,6 +212,17 @@ if sys.platform == "win32" and hasattr(os, "add_dll_directory"):
             except OSError:
                 pass
     del _dll_dir
+
+
+# Load only the small identity entry point first. A replaced same-version Core
+# must fail before scientific modules initialize against an incompatible ABI.
+from ._pyopenms import _core_build_info, _core_data_path
+from ._runtime_identity import validate_runtime_identity
+__openms_runtime_build_info__ = validate_runtime_identity(
+    __openms_core_build_info__, _core_build_info()
+)
+_core_data_path()  # A bad data override raises before any domain module initializes.
+del _core_build_info, _core_data_path, validate_runtime_identity
 
 
 def _import_submodules():

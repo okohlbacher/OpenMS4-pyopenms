@@ -1,5 +1,7 @@
 graft pyopenms/share
 prune pyopenms/share/OpenMS/examples
+prune pyopenms/share/OpenMS/test-data
+include pyopenms/_build_provenance.json
 include pyopenms/*.dll
 include pyopenms/*.dylib
 include pyopenms/*.so

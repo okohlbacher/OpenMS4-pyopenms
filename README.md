@@ -14,11 +14,17 @@ must export `OpenMS::Core`, `OpenMS::OpenSwathAlgo`, `OpenMS::Arrow`,
 compiler, C++23 standard library ABI, platform, build configuration and shared
 library choices as that SDK. No core source or core build directory is needed.
 CMake disables its package registries and rejects mismatched SDK revisions.
+The SDK must provide `OpenMS_BUILD_INFO_FILE`. Configuration also checks its
+platform, architecture, configuration, C++ standard, shared linkage and required
+OpenSWATH feature. A multi-configuration build exposes only the SDK's configuration.
 
 Install Python build requirements from `pyproject.toml` into your chosen build
 environment. Nanobind is fixed to 2.10.0; this package never downloads or patches
 its C++ dependencies while configuring. Source provenance is in
 `source-provenance.json`.
+The pinned nanobind 2.10.0 has a dependency-discovery regression; the supported
+`NB_USE_SUBMODULE_DEPS=ON` setting selects the headers already shipped in its wheel.
+No third-party source is patched.
 
 Once builds are authorized and the SDK exists:
 
@@ -31,12 +37,21 @@ python -m pip wheel . --no-build-isolation --no-deps \
 The example prefix is illustrative; use the actual pinned artifact's location.
 The lock also belongs in source distributions, so archive builds perform the
 same dependency check.
+Archive builds must explicitly supply `OPENMS4_SOURCE_REVISION` and
+`OPENMS4_SOURCE_DIRTY`. Git builds record the actual HEAD and tracked changes;
+`OPENMS4_REQUIRE_CLEAN_SOURCE=ON` rejects dirty sources for publishable builds.
+The wheel backend defaults to Release, so use a matching Release SDK for that
+command. For Debug development, configure CMake directly with
+`-DCMAKE_BUILD_TYPE=Debug` against the Debug SDK.
 
 Wheels bundle the SDK's runtime data under `pyopenms/share/OpenMS`. Setting
 `NO_SHARE=ON` opts out; then set `OPENMS_DATA_PATH` explicitly to the compatible
 installed core data directory. Core's optional Thermo managed runtime remains
 part of the SDK data. The Python package preserves its existing explicit bridge
 lookup when those assemblies are bundled.
+TestSupport's `test-data` and SDK examples are excluded. Reconfiguration removes
+old staged share data, and installation clears the package-owned share directory
+before copying; switching to `NO_SHARE=ON` also removes a prior bundled payload.
 
 Shared-library repair uses auditwheel, delocate or delvewheel, as appropriate.
 The release runner must provision the pinned SDK; the package does not install
@@ -55,6 +70,7 @@ package owns TOPP fixtures. These packages are required only when configuring
 
 ```sh
 cmake -S . -B build \
+  -DCMAKE_BUILD_TYPE=Debug \
   -DOpenMS_DIR=/sdk/lib/cmake/OpenMS \
   -DOpenMSTestData_DIR=/test-data/lib/cmake/OpenMSTestData \
   -DPYOPENMS_BUILD_TESTING=ON
@@ -76,6 +92,8 @@ Fast checks that require neither core binaries nor a compiler:
 ```sh
 python tools/check_standalone.py
 python tools/check_cmake_contract.py  # POSIX; CMake required, compiler never invoked
+python tools/test_runtime_identity.py
+python tools/test_wheel_contents.py
 ```
 
 This checks fixture resolution, Python syntax and binding source completeness.
@@ -83,15 +101,60 @@ The configure checks use fake installed targets to
 verify SDK discovery and test registration; such checks cannot establish binary
 correctness.
 
+The small native Arrow probe uses the same `bindings/arrow_table.h` as the real
+bindings, with no Core algorithms compiled. It requires installed Arrow,
+nanobind and PyArrow:
+
+```sh
+cmake -S tests/native_arrow -B build-arrow -DCMAKE_BUILD_TYPE=Debug \
+  -DPython_EXECUTABLE=/path/to/python
+cmake --build build-arrow --parallel 2
+ctest --test-dir build-arrow --output-on-failure
+```
+
+It tests empty-schema preservation, multiple batches forced at the C stream
+boundary, producer garbage collection, malformed capsules, and stream errors.
+All import helpers accept an Arrow C stream provider (including PyArrow tables
+and readers), consume every batch, and retain Arrow release ownership. The C
+interface transfers buffers without copying; scientific object conversion and
+combining output chunks can still copy. No end-to-end zero-copy guarantee is made.
+
 ## Provenance and remaining acceptance gates
 
 After compilation, `pyopenms.__version__` reports the Python package version;
 `pyopenms.__openms_core_version__` and `pyopenms.__openms_core_revision__` report
-its build-time core SDK identity. These metadata values do not detect a replaced
-runtime library by themselves. Artifact digest verification and the full ABI
-manifest remain the release composition layer's responsibility.
+its build-time core SDK identity. `__source_revision__` and `__source_dirty__`
+identify this Python package's own source. `_build_provenance.json` carries the
+same data plus the Core build identity without requiring execution of wheel code.
 
-No native compilation or binary tests were performed during extraction. Before
+Before scientific modules load, the small native entry module reports the loaded
+Core's `VersionInfo.getBuildInfo()`. Import rejects source, architecture,
+configuration, feature or public-dependency differences from the embedded Core
+identity. Compiler patch versions and class-test configuration are recorded but
+do not by themselves imply an ABI difference. `__openms_runtime_build_info__`
+exposes the accepted loaded identity. Artifact hashes and native wheel tests
+remain necessary; matching metadata alone is not a universal ABI proof.
+
+An invalid `OPENMS_DATA_PATH` raises a catchable exception before domain imports.
+Correct the override and retry the import; successful Core data lookup remains
+cached for the process. Native tests exercise this in a fresh Python process.
+
+Inspect every final repaired wheel, including one built from reused staging:
+
+```sh
+python tools/check_wheel_contents.py dist/pyopenms-<tags>.whl \
+  --expected-source <python-commit> --expected-core <core-commit>
+```
+
+The check rejects test/example data, absent chemistry data, wrong revisions and
+dirty source declarations. Use `--no-share` only for intentionally unbundled
+data, or `--allow-dirty` for explicitly marked development wheels.
+
+The original extraction performed no native Python validation. The later isolated
+Arrow probe passed four cases with AppleClang 21, Arrow C++ 25 and PyArrow 23.0.1
+on macOS arm64; the host's existing Abseil dependency required the documented
+loader fallback from the parent Core report. That probe is not a repaired-wheel
+or complete scientific-binding test. Before
 publishing a wheel, build an sdist in a clean runner with core source/build trees
 unavailable, run the complete Python test suite against installed fixtures, repair
 and relocate the wheel, and repeat import, resource, numerical and Arrow/PyArrow

@@ -1,4 +1,11 @@
-"""Build-time identity of the installed core SDK used for this wheel."""
-PACKAGE_VERSION = "@PYOPENMS_PACKAGE_VERSION@"
-CORE_VERSION = "@OpenMS_VERSION@"
-CORE_SOURCE_REVISION = "@OpenMS_SOURCE_REVISION@"
+"""Build provenance, also available as JSON for artifact verification."""
+import json
+from pathlib import Path
+
+BUILD_PROVENANCE = json.loads(Path(__file__).with_suffix(".json").read_text(encoding="utf-8"))
+PACKAGE_VERSION = BUILD_PROVENANCE["version"]
+PACKAGE_SOURCE_REVISION = BUILD_PROVENANCE["source_revision"]
+PACKAGE_SOURCE_DIRTY = BUILD_PROVENANCE["source_dirty"]
+CORE_BUILD_INFO = BUILD_PROVENANCE["core"]
+CORE_VERSION = CORE_BUILD_INFO["version"]
+CORE_SOURCE_REVISION = CORE_BUILD_INFO["source_revision"]
