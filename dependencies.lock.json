@@ -13,7 +13,7 @@
     },
     "OpenMSProSE": {
       "version": "1.0.0",
-      "source_revision": "e328ec0497807c6f7650e4e466368fb4c542e71e",
+      "source_revision": "0e5e2398fc2f8e28efed826538d56ff8c05d1bcf",
       "repository": "https://github.com/okohlbacher/OpenMS4-prose"
     },
     "OpenMSFLASH": {
