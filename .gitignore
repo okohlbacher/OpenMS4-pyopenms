@@ -1,0 +1,7 @@
+/.py-build-cmake_cache/
+/dist/
+/build/
+/build-arrow/
+/build-arrow-sanitized/
+__pycache__/
+.pytest_cache/

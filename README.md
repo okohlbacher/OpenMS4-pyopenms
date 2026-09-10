@@ -38,7 +38,8 @@ The example prefix is illustrative; use the actual pinned artifact's location.
 The lock also belongs in source distributions, so archive builds perform the
 same dependency check.
 Archive builds must explicitly supply `OPENMS4_SOURCE_REVISION` and
-`OPENMS4_SOURCE_DIRTY`. Git builds record the actual HEAD and tracked changes;
+`OPENMS4_SOURCE_DIRTY`. Git builds record the actual HEAD, tracked changes and
+non-ignored untracked inputs;
 `OPENMS4_REQUIRE_CLEAN_SOURCE=ON` rejects dirty sources for publishable builds.
 The wheel backend defaults to Release, so use a matching Release SDK for that
 command. For Debug development, configure CMake directly with
@@ -119,6 +120,29 @@ All import helpers accept an Arrow C stream provider (including PyArrow tables
 and readers), consume every batch, and retain Arrow release ownership. The C
 interface transfers buffers without copying; scientific object conversion and
 combining output chunks can still copy. No end-to-end zero-copy guarantee is made.
+
+The same production helper can be checked with AddressSanitizer and
+UndefinedBehaviorSanitizer, without another test implementation. On macOS with
+AppleClang, preload its sanitizer runtime into Python directly:
+
+```sh
+cmake -S tests/native_arrow -B build-arrow-sanitized -DCMAKE_BUILD_TYPE=Debug \
+  -DPython_EXECUTABLE=/path/to/python \
+  '-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer'
+cmake --build build-arrow-sanitized --parallel 1
+DYLD_INSERT_LIBRARIES="$(xcrun clang --print-resource-dir)/lib/darwin/libclang_rt.asan_osx_dynamic.dylib" \
+  ASAN_OPTIONS=detect_leaks=0:halt_on_error=1 \
+  UBSAN_OPTIONS=halt_on_error=1:print_stacktrace=1 \
+  PYTHONPATH="$PWD/build-arrow-sanitized" \
+  /path/to/python -m pytest tests/native_arrow/test_arrow_table.py
+```
+
+Use the same installed dependency search paths as the ordinary probe. Launching
+through intermediate programs can lose the macOS preload variable; the direct
+Python invocation above is required for this profile. All four cases passed
+under both sanitizers with AppleClang 21 on macOS arm64. This instruments the
+helper and nanobind; installed Arrow, PyArrow and Python remain uninstrumented.
+Leak detection is disabled for this Darwin profile, so it is not a leak check.
 
 ## Provenance and remaining acceptance gates
 
