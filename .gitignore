@@ -1,7 +1,4 @@
-/.py-build-cmake_cache/
-/dist/
-/build/
-/build-arrow/
-/build-arrow-sanitized/
+/dependencies/
+build/
 __pycache__/
-.pytest_cache/
+*.pyc
