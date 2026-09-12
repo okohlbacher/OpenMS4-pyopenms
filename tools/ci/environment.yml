@@ -20,7 +20,7 @@ dependencies:
   - libxml2-devel
   - zlib
   - bzip2
-  - nanobind=2.10.*
+  - nanobind=2.10.0
   - numpy
   - pandas
   - pyarrow=23.0.1
