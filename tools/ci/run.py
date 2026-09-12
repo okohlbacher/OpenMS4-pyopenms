@@ -4,8 +4,9 @@
 pyOpenMS consumes Core directly and the ProSE and FLASH backends as separate
 installed packages, and those two build their executables against CLI, so this
 driver installs that whole chain before configuring the bindings. It packages the
-installed module tree; producing repaired, redistributable wheels is a separate
-pipeline this workflow does not claim.
+installed module tree and then builds the same bindings as a wheel, repairs it to
+carry every library it links, and runs the test suite against that wheel from a
+fresh virtual environment with no build prefix on any library path.
 """
 
 import argparse
@@ -46,6 +47,33 @@ def archive_install(prefix: Path, output: Path, name: str) -> Path:
     archive.with_suffix(".gz.sha256").write_text(
         f"{digest}  {archive.name}\n", encoding="utf-8")
     return archive
+
+
+def test_environment(build: Path, configuration: str) -> dict[str, str]:
+    """The fixture variables CTest passes to the Python tests, read from CTest itself."""
+    tests = json.loads(subprocess.check_output(
+        ["ctest", "--test-dir", str(build), "-C", configuration, "--show-only=json-v1"], text=True))
+    for test in tests["tests"]:
+        if test["name"] == "pyopenms_unittests":
+            variables = dict(arg.split("=", 1) for arg in test["command"]
+                             if "=" in arg and not arg.startswith("-"))
+            # The wheel must find its own bundled runtime data, so OPENMS_DATA_PATH stays out.
+            return {k: v for k, v in variables.items() if k not in ("PYTHONPATH", "OPENMS_DATA_PATH")}
+    raise ValueError("pyopenms_unittests is not registered")
+
+
+def repair_command(wheel: Path, output: Path, library_dirs: list[str]) -> list[str]:
+    """The platform's wheel repair tool, bundling the pinned libraries into the wheel."""
+    if sys.platform == "linux":
+        return ["auditwheel", "repair", "-w", str(output), str(wheel)]
+    if sys.platform == "darwin":
+        import platform
+        return ["delocate-wheel", "--require-archs", platform.machine(), "-w", str(output),
+                "-v", str(wheel)]
+    command = ["delvewheel", "repair", "-w", str(output)]
+    for directory in library_dirs:
+        command += ["--add-path", directory]
+    return command + [str(wheel)]
 
 
 def core_prefix(extracted: Path) -> Path:
@@ -179,6 +207,55 @@ def main() -> None:
     (install / "source-revision.txt").write_text(revision + "\n", encoding="utf-8")
     archive_install(install, work / "dist",
                     f"OpenMS4-pyopenms-{args.platform}-Release-{revision[:12]}")
+
+    # The wheel: the same bindings built through the PEP 517 backend, repaired so
+    # the wheel carries Core, the backends and their third-party libraries.
+    wheel_tools = {"linux": ["auditwheel", "patchelf"], "darwin": ["delocate"],
+                   "win32": ["delvewheel"]}[sys.platform]
+    run("install-wheel-tools", [sys.executable, "-m", "pip", "install", "--no-input",
+                                "py-build-cmake>=0.3.0", *wheel_tools])
+    # py-build-cmake escapes ";" in strings, so the prefix list must be a TOML array.
+    wheel_options = {"CMAKE_PREFIX_PATH": json.dumps(prefixes.split(";")),
+                     "PYOPENMS_PREPARE_WHEEL_REPAIR": "ON",
+                     "PYOPENMS_WITH_PROSE": "ON", "PYOPENMS_WITH_FLASH": "ON",
+                     "OPENMS4_REQUIRE_CLEAN_SOURCE": "ON"}
+    if windows:
+        wheel_options |= {"CMAKE_GENERATOR_PLATFORM": "x64",
+                          "CMAKE_MSVC_RUNTIME_LIBRARY": "MultiThreadedDLL"}
+    elif sys.platform == "darwin":
+        wheel_options |= {"OpenMP_ROOT": dependency_prefix.as_posix(),
+                          "CURL_ROOT": dependency_prefix.as_posix(), "CMAKE_FIND_FRAMEWORK": "LAST"}
+    wheel_config = work / "wheel.toml"
+    wheel_config.write_text(
+        f'[cmake]\ngenerator = "{generator}"\nbuild_path = "{(work / "wheel-build").as_posix()}"\n[cmake.options]\n'
+        + "".join(f'{key} = {value if value.startswith("[") else json.dumps(value)}\n'
+                  for key, value in wheel_options.items()), encoding="utf-8")
+    wheelhouse, repaired = work / "wheelhouse", work / "wheelhouse-repaired"
+    run("build-wheel", [sys.executable, "-m", "pip", "wheel", str(source), "--no-build-isolation",
+                        "--no-deps", "-w", str(wheelhouse), f"--config-settings=--local={wheel_config}"])
+    (wheel,) = wheelhouse.glob("pyopenms-*.whl")
+    run("repair-wheel", repair_command(wheel, repaired, library_dirs.split(os.pathsep)))
+    (wheel,) = repaired.glob("pyopenms-*.whl")
+
+    # Test it the way a user gets it: a fresh environment, nothing on the library
+    # path, the fixture paths CTest uses, and the bundled runtime data.
+    venv = work / "wheel-venv"
+    run("create-wheel-venv", [sys.executable, "-m", "venv", str(venv)])
+    venv_python = venv / ("Scripts/python.exe" if windows else "bin/python")
+    run("install-wheel", [str(venv_python), "-m", "pip", "install", "--no-input", str(wheel),
+                          "pytest", "docutils", "pandas", "pyarrow!=24.0.0,!=25.0.0"])
+    user_env = {k: v for k, v in os.environ.items()
+                if k not in ("LD_LIBRARY_PATH", "DYLD_FALLBACK_LIBRARY_PATH", "OPENMS_DATA_PATH")}
+    user_env.update(test_environment(build, configuration))
+    env, build_env = user_env, env
+    test_dir = work / "wheel-test"
+    test_dir.mkdir()
+    run("test-wheel", [str(venv_python), "-m", "pytest", str(source / "tests"),
+                       "--import-mode=importlib", "-p", "no:cacheprovider"], cwd=test_dir)
+    env = build_env
+    shutil.copy2(wheel, work / "dist" / wheel.name)
+    digest = hashlib.sha256(wheel.read_bytes()).hexdigest()
+    (work / "dist" / f"{wheel.name}.sha256").write_text(f"{digest}  {wheel.name}\n", encoding="utf-8")
 
 
 if __name__ == "__main__":

@@ -70,6 +70,12 @@ old staged share data, and installation clears the package-owned share directory
 before copying; switching to `NO_SHARE=ON` also removes a prior bundled payload.
 
 Shared-library repair uses auditwheel, delocate or delvewheel, as appropriate.
+CI does exactly this after its native build: `tools/ci/run.py` builds the wheel
+through the PEP 517 backend against the same installed chain, repairs it, installs
+it into a fresh virtual environment with no build prefix on any library path and
+runs the whole test suite from there. The repaired wheel is uploaded next to the
+installed-tree archive and published with each release. It is built for the CI
+environment's Python (3.12); other interpreters need their own build for now.
 The release runner must provision the pinned SDK; the package does not install
 system dependencies or select a mutable SDK container image. For Windows tests,
 set `PYOPENMS_DLL_PATH` if transitive installed DLLs live outside the two core
