@@ -84,6 +84,7 @@ jobs:
           generate-run-shell: false
           cache-environment: true
           cache-environment-key: pyopenms-${{ matrix.platform }}
+          post-cleanup: all
       - name: Install the exact nanobind the bindings require
         shell: bash
         run: |
