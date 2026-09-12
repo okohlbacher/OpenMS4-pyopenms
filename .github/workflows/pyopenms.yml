@@ -82,6 +82,13 @@ jobs:
           generate-run-shell: false
           cache-environment: true
           cache-environment-key: pyopenms-${{ matrix.platform }}
+      - name: Install the exact nanobind the bindings require
+        shell: bash
+        run: |
+          # The bindings ask for nanobind 2.10.0 EXACT. conda-forge went from
+          # 2.9.2 to 2.10.2 without packaging 2.10.0, so it comes from PyPI.
+          micromamba run -n package-ci python -m pip install --no-input nanobind==2.10.0
+          micromamba run -n package-ci python -c "import nanobind, sys; assert nanobind.__version__ == '2.10.0', nanobind.__version__; print('nanobind', nanobind.__version__)"
       - name: Download and verify the pinned Core SDK
         shell: bash
         run: |
