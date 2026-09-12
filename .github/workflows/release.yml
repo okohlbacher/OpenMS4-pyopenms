@@ -39,4 +39,4 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             ./artifacts/pyopenms-*/* \
             --verify-tag --prerelease --title "pyOpenMS ${{ github.ref_name }}" \
-            --notes "Tested packages for Linux x64/arm64, macOS x64/arm64 and Windows x64, Each archive is the installed module tree built against the pinned Core SDK and the ProSE and FLASH backends, with generated stubs. These are not repaired, redistributable wheels; wheel building and repair remain a separate pipeline."
+            --notes "Each archive is the installed module tree built against the pinned Core SDK and the ProSE and FLASH backends, with generated stubs. These are not repaired, redistributable wheels; wheel building and repair remain a separate pipeline."
