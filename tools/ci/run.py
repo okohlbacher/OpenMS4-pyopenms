@@ -97,6 +97,33 @@ def main() -> None:
         env["DYLD_FALLBACK_LIBRARY_PATH"] = library_dirs
     commands = []
 
+    def run(name: str, command: list[str], cwd: Path = source) -> None:
+        started = time.monotonic()
+        print(f"\n--- {name} ---", flush=True)
+        log = results / f"{name}.log"
+        with log.open("w", encoding="utf-8") as stream:
+            process = subprocess.Popen(command, cwd=cwd, env=env, text=True,
+                                       encoding="utf-8", errors="replace",
+                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            for line in process.stdout:
+                stream.write(line)
+                print(line, end="", flush=True)
+            code = process.wait()
+        commands.append({"name": name, "command": command, "returncode": code,
+                         "elapsed_seconds": round(time.monotonic() - started, 3)})
+        (results / "commands.json").write_text(
+            json.dumps(commands, indent=2) + "\n", encoding="utf-8")
+        if code:
+            raise subprocess.CalledProcessError(code, command)
+
+    common = ["-G", generator, f"-DCMAKE_BUILD_TYPE={configuration}",
+              "-DOPENMS4_REQUIRE_CLEAN_SOURCE=ON"]
+    if windows:
+        common += ["-A", "x64", "-DCMAKE_MSVC_RUNTIME_LIBRARY=MultiThreadedDLL"]
+    elif sys.platform == "darwin":
+        common += [f"-DOpenMP_ROOT={dependency_prefix.as_posix()}",
+                   f"-DCURL_ROOT={dependency_prefix.as_posix()}",
+                   "-DCMAKE_FIND_FRAMEWORK=LAST"]
     run("driver-tests", [sys.executable, "-m", "unittest", "discover", "-s", "tools/ci", "-v"])
     run("configure-cli", ["cmake", "-S", str(args.cli_source.resolve()), "-B", str(cli_build),
                           f"-DCMAKE_INSTALL_PREFIX={cli_install.as_posix()}",
