@@ -76,6 +76,10 @@ it into a fresh virtual environment with no build prefix on any library path and
 runs the whole test suite from there. The repaired wheel is uploaded next to the
 installed-tree archive and published with each release. It is built for the CI
 environment's Python (3.12); other interpreters need their own build for now.
+Before that test, CI checks the wheel's exact source/Core revisions and bundled
+data, removes inherited Python and native library overrides (including Windows
+DLL paths), and verifies that Python imports the copy installed in the fresh
+environment. Only explicit test-fixture paths are carried over from CTest.
 The release runner must provision the pinned SDK; the package does not install
 system dependencies or select a mutable SDK container image. For Windows tests,
 set `PYOPENMS_DLL_PATH` if transitive installed DLLs live outside the two core

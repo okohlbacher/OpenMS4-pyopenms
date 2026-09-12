@@ -58,9 +58,30 @@ def test_environment(build: Path, configuration: str) -> dict[str, str]:
         if test["name"] == "pyopenms_unittests":
             variables = dict(arg.split("=", 1) for arg in test["command"]
                              if "=" in arg and not arg.startswith("-"))
-            # The wheel must find its own bundled runtime data, so OPENMS_DATA_PATH stays out.
-            return {k: v for k, v in variables.items() if k not in ("PYTHONPATH", "OPENMS_DATA_PATH")}
+            # CTest also supplies build-tree Python and Windows DLL paths. Only
+            # fixtures may cross into the installed-wheel test environment.
+            fixtures = ("OPENMS_CLASS_TEST_DATA_PATH", "OPENMS_TEST_DATA_PATH",
+                        "OPENTIMS_DDA_TEST_DATA", "OPENTIMS_DIA_TEST_DATA")
+            return {k: v for k, v in variables.items() if k in fixtures}
     raise ValueError("pyopenms_unittests is not registered")
+
+
+def wheel_test_environment(inherited: dict[str, str], venv_bin: Path) -> dict[str, str]:
+    """Keep the wheel from finding modules, runtime data or DLLs in the build SDK."""
+    overrides = ("PYTHONPATH", "PYTHONHOME", "PYTHONUSERBASE", "PYOPENMS_DLL_PATH",
+                 "OPENMS_DATA_PATH", "OPENMS_THERMO_MANAGED_DIR", "LD_LIBRARY_PATH",
+                 "LD_PRELOAD", "DYLD_LIBRARY_PATH", "DYLD_FALLBACK_LIBRARY_PATH",
+                 "DYLD_FRAMEWORK_PATH", "DYLD_FALLBACK_FRAMEWORK_PATH",
+                 "DYLD_INSERT_LIBRARIES", "PATH")
+    environment = {k: v for k, v in inherited.items() if k.upper() not in overrides}
+    if sys.platform == "win32":
+        system_root = inherited.get("SystemRoot", inherited.get("SYSTEMROOT", r"C:\Windows"))
+        system_paths = [str(Path(system_root) / "System32"), system_root]
+    else:
+        system_paths = os.defpath.split(os.pathsep)
+    environment["PATH"] = os.pathsep.join([str(venv_bin), *system_paths])
+    environment["PYTHONNOUSERSITE"] = "1"
+    return environment
 
 
 def repair_command(wheel: Path, output: Path, library_dirs: list[str]) -> list[str]:
@@ -273,6 +294,10 @@ def main() -> None:
         run("list-wheel-deps", ["delocate-listdeps", "--all", "--depending", str(wheel)])
     run("repair-wheel", repair_command(wheel, repaired, library_dirs.split(os.pathsep)))
     (wheel,) = repaired.glob("pyopenms-*.whl")
+    lock = json.loads((source / "dependencies.lock.json").read_text(encoding="utf-8"))
+    run("check-wheel-contents", [sys.executable, str(source / "tools/check_wheel_contents.py"),
+                                 str(wheel), "--expected-source", revision,
+                                 "--expected-core", lock["dependencies"]["OpenMS"]["source_revision"]])
 
     # Test it the way a user gets it: a fresh environment, nothing on the library
     # path, the fixture paths CTest uses, and the bundled runtime data.
@@ -281,13 +306,17 @@ def main() -> None:
     venv_python = venv / ("Scripts/python.exe" if windows else "bin/python")
     run("install-wheel", [str(venv_python), "-m", "pip", "install", "--no-input", str(wheel),
                           "pytest", "docutils", "pandas", "pyarrow!=24.0.0,!=25.0.0"])
-    user_env = {k: v for k, v in os.environ.items()
-                if k not in ("LD_LIBRARY_PATH", "DYLD_FALLBACK_LIBRARY_PATH", "OPENMS_DATA_PATH")}
+    user_env = wheel_test_environment(os.environ, venv_python.parent)
     user_env.update(test_environment(build, configuration))
     env, build_env = user_env, env
     test_dir = work / "wheel-test"
     test_dir.mkdir()
-    run("test-wheel", [str(venv_python), "-m", "pytest", str(source / "tests"),
+    run("check-wheel-import", [str(venv_python), "-I", "-c",
+                              "import pathlib, sys, pyopenms; "
+                              "origin = pathlib.Path(pyopenms.__file__).resolve(); "
+                              "assert origin.is_relative_to(pathlib.Path(sys.prefix).resolve()), origin; "
+                              "print(origin)"], cwd=test_dir)
+    run("test-wheel", [str(venv_python), "-I", "-m", "pytest", str(source / "tests"),
                        "--import-mode=importlib", "-p", "no:cacheprovider"], cwd=test_dir)
     env = build_env
     shutil.copy2(wheel, work / "dist" / wheel.name)
