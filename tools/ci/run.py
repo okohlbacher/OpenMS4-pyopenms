@@ -14,6 +14,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import re
 import shutil
 import subprocess
 import sys
@@ -74,6 +75,33 @@ def repair_command(wheel: Path, output: Path, library_dirs: list[str]) -> list[s
     for directory in library_dirs:
         command += ["--add-path", directory]
     return command + [str(wheel)]
+
+
+def link_rpath_dependencies(prefixes: list[Path], search: list[Path]) -> list[str]:
+    """Resolve every @rpath dependency of the installed libraries inside our prefixes.
+
+    The SDKs link their dependencies as @rpath/NAME and find them through the
+    environment. On the Intel runner /usr/local/lib (Homebrew) is searched before the
+    pinned conda prefix, so delocate planned two libraries with the same basename
+    (libzstd, via Homebrew's libzip) and refused to repair the wheel. Linking the
+    pinned copy next to the library that asks for it makes the resolution ours.
+    """
+    linked = []
+    for prefix in prefixes:
+        libraries = sorted(prefix.glob("*.dylib"))
+        for library in libraries:
+            text = subprocess.check_output(["otool", "-L", str(library)], text=True)
+            for name in re.findall(r"@rpath/(\S+\.dylib)", text):
+                target = prefix / name
+                if target.exists():
+                    continue
+                source = next((directory / name for directory in search
+                               if (directory / name).exists()), None)
+                if source is None:
+                    continue   # delocate reports what it cannot resolve
+                target.symlink_to(source)
+                linked.append(f"{target} -> {source}")
+    return linked
 
 
 def core_prefix(extracted: Path) -> Path:
@@ -210,6 +238,11 @@ def main() -> None:
 
     # The wheel: the same bindings built through the PEP 517 backend, repaired so
     # the wheel carries Core, the backends and their third-party libraries.
+    if sys.platform == "darwin":
+        links = link_rpath_dependencies(
+            [core / "lib", providers / "lib", cli_install / "lib"],
+            [dependency_prefix / "lib", core / "lib", providers / "lib", cli_install / "lib"])
+        print("\n--- linked @rpath dependencies ---\n" + "\n".join(links or ["none"]), flush=True)
     wheel_tools = {"linux": ["auditwheel", "patchelf"], "darwin": ["delocate"],
                    "win32": ["delvewheel"]}[sys.platform]
     run("install-wheel-tools", [sys.executable, "-m", "pip", "install", "--no-input",
