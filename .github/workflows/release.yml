@@ -32,7 +32,10 @@ jobs:
             exit 1
           fi
           gh run download "$run_id" --pattern 'pyopenms-*' --dir artifacts
-          test "$(find artifacts -name '*.sha256' | wc -l)" -eq 5
+          # One package archive per platform; pyOpenMS adds a repaired wheel beside it, so
+          # count the archives and verify every checksum the artifacts carry.
+          test "$(find artifacts -name '*.tar.gz' | wc -l)" -eq 5
+          test "$(find artifacts -name '*.sha256' | wc -l)" -ge 5
           find artifacts -name '*.sha256' -print0 | while IFS= read -r -d '' checksum; do
             sed -i 's/\r$//' "$checksum"
             (cd "$(dirname "$checksum")" && shasum -a 256 -c "$(basename "$checksum")")
@@ -42,4 +45,4 @@ jobs:
           gh release create "${{ github.ref_name }}" \
             ./artifacts/pyopenms-*/* \
             --verify-tag --prerelease --title "pyOpenMS ${{ github.ref_name }}" \
-            --notes "Each archive is the installed module tree built against the pinned Core SDK and the ProSE and FLASH backends, with generated stubs. These are not repaired, redistributable wheels; wheel building and repair remain a separate pipeline."
+            --notes "Each archive is the installed module tree built against the pinned Core SDK and the ProSE and FLASH backends, with generated stubs. Beside it is the repaired wheel for that platform, built through the PEP 517 backend and tested from a clean environment on the CI interpreter (CPython 3.12)."
