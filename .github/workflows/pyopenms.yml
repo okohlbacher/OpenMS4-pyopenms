@@ -15,9 +15,9 @@ permissions:
 jobs:
   native:
     name: ${{ matrix.platform }} / Release
-    # Pushes build Linux x64 on the dax runner and macOS arm64 on the Mac Studio;
-    # pull requests from forks must never run there, so they keep hosted runners.
-    runs-on: ${{ (github.event_name == 'push' && matrix.platform == 'linux-x64' && 'dax-linux-x64') || (github.event_name == 'push' && matrix.platform == 'macos-arm64' && 'studio-macos-arm64') || matrix.runner }}
+    # Pushes and dispatches build Linux x64 on the dax runner and macOS arm64 on the
+    # Mac Studio; pull requests from forks must never run there, so they stay hosted.
+    runs-on: ${{ (github.event_name != 'pull_request' && matrix.platform == 'linux-x64' && 'dax-linux-x64') || (github.event_name != 'pull_request' && matrix.platform == 'macos-arm64' && 'studio-macos-arm64') || matrix.runner }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -54,7 +54,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: 9ea7e4c1918e01b5c05b8f2b4f87c266b6f4cb08
+          ref: 7a30e66632662d8c404c9c8805b451880ae5a6a1
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -66,13 +66,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 720c108fd31a01ec4e19e3d2b29d737e944ac07d
+          ref: a62d96cfb7cf97d2fbb3a3505126709b4c4ba6a8
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: 2393c2d67b97a2f194acb2f878a7bc2839561562
+          ref: 037aff7dd709863654e42bfd4c5b2154fc5dcb75
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
