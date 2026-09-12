@@ -15,7 +15,9 @@ permissions:
 jobs:
   native:
     name: ${{ matrix.platform }} / Release
-    runs-on: ${{ matrix.runner }}
+    # Pushes build Linux x64 on the self-hosted dax runner; pull requests from
+    # forks must never run there, so they keep the hosted runner.
+    runs-on: ${{ matrix.platform == 'linux-x64' && github.event_name == 'push' && 'dax-linux-x64' || matrix.runner }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -52,7 +54,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: fc30c523c3f3dfc79a6b7a6277e58bb23d81b197
+          ref: 8a9726da5e9db8ffc719e97660f4119146048be3
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -64,13 +66,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: dbf83b31789ba6e51f2dc4df393daf14f7f40818
+          ref: ba0fe3eb4681c298684fd5a0b654c34491e25ce6
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: efecf9ed42aa25a3f4aee7853a6b24a70ee607c9
+          ref: 0333ce7c9b533214d0bf5bb11ddd0b68b9655f91
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
@@ -106,7 +108,7 @@ jobs:
       - name: Build, test, install, and package
         run: >-
           micromamba run -n package-ci python tools/ci/run.py
-          --platform ${{ matrix.platform }} --jobs ${{ matrix.jobs }}
+          --platform ${{ matrix.platform }} --jobs ${{ startsWith(runner.name, 'dax') && 24 || matrix.jobs }}
           --core-dir "${{ runner.temp }}/core"
           --cli-source dependencies/cli
           --prose-source dependencies/prose
