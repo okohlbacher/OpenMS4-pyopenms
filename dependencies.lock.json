@@ -13,12 +13,12 @@
     },
     "OpenMSProSE": {
       "version": "1.0.0",
-      "source_revision": "ba0fe3eb4681c298684fd5a0b654c34491e25ce6",
+      "source_revision": "720c108fd31a01ec4e19e3d2b29d737e944ac07d",
       "repository": "https://github.com/okohlbacher/OpenMS4-prose"
     },
     "OpenMSFLASH": {
       "version": "1.0.0",
-      "source_revision": "0333ce7c9b533214d0bf5bb11ddd0b68b9655f91",
+      "source_revision": "2393c2d67b97a2f194acb2f878a7bc2839561562",
       "repository": "https://github.com/okohlbacher/OpenMS4-flash"
     }
   },
