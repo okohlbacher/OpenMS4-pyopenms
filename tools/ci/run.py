@@ -234,6 +234,10 @@ def main() -> None:
     run("build-wheel", [sys.executable, "-m", "pip", "wheel", str(source), "--no-build-isolation",
                         "--no-deps", "-w", str(wheelhouse), f"--config-settings=--local={wheel_config}"])
     (wheel,) = wheelhouse.glob("pyopenms-*.whl")
+    if sys.platform == "darwin":
+        # Records every resolved library path before delocate copies them, so a
+        # duplicate basename (two libzstd copies on one runner image) is diagnosable.
+        run("list-wheel-deps", ["delocate-listdeps", "--all", "--depending", str(wheel)])
     run("repair-wheel", repair_command(wheel, repaired, library_dirs.split(os.pathsep)))
     (wheel,) = repaired.glob("pyopenms-*.whl")
 
