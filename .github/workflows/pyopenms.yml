@@ -12,12 +12,16 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   native:
     name: ${{ matrix.platform }} / Release
-    # Pushes and dispatches build Linux x64 on the dax runner and macOS arm64 on the
-    # Mac Studio; pull requests from forks must never run there, so they stay hosted.
-    runs-on: ${{ (github.event_name != 'pull_request' && matrix.platform == 'linux-x64' && 'dax-linux-x64') || (github.event_name != 'pull_request' && matrix.platform == 'macos-arm64' && 'studio-macos-arm64') || matrix.runner }}
+    # Existing packages use registered private runners for trusted builds.
+    # Fork PRs and new packages without registered runners use hosted machines.
+    runs-on: ${{ (github.event_name != 'pull_request' && matrix.pool) || matrix.runner }}
     timeout-minutes: 120
     strategy:
       fail-fast: false
@@ -25,22 +29,27 @@ jobs:
         include:
           - platform: linux-x64
             runner: ubuntu-24.04
+            pool: dax-linux-x64
             packages: gcc_linux-64=14 gxx_linux-64=14 coin-or-cbc=2.10.*
             jobs: 4
           - platform: linux-arm64
             runner: ubuntu-24.04-arm
+            pool: ''
             packages: gcc_linux-aarch64=14 gxx_linux-aarch64=14 coin-or-cbc=2.10.*
             jobs: 4
           - platform: macos-arm64
             runner: macos-15
+            pool: studio-macos-arm64
             packages: llvm-openmp coin-or-cbc=2.10.*
             jobs: 2
           - platform: macos-x64
             runner: macos-15-intel
+            pool: ''
             packages: llvm-openmp coin-or-cbc=2.10.*
             jobs: 4
           - platform: windows-x64
             runner: windows-2022
+            pool: flashbox-windows-x64
             packages: glpk=5.*
             jobs: 4
     env:
@@ -54,25 +63,25 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: d5213ff3551a8608e4e3f930fd4a6f85a8c82f97
+          ref: 53448a1759e963daa6b5b9cc3f2900c318f7bba3
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-test-data
-          ref: a14ecf5d5f5de878dbaf5ddb9feafe154b02303a
+          ref: f4f6b5d357675c5ec340a63ba785f1be7050d1e8
           path: dependencies/test-data
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 828d72595677f6cd22e8c02eca24956855dfcf1c
+          ref: 4dec802bee6c632e322c1eaedd188b8af492dc04
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: b2c6771de7746c43ad55558d17429a15087083fb
+          ref: f2752a8d04b608492525120ee6d36ea8b47a715e
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
@@ -92,12 +101,12 @@ jobs:
           # 2.9.2 to 2.10.2 without packaging 2.10.0, so it comes from PyPI.
           micromamba run -n package-ci python -m pip install --no-input nanobind==2.10.0
           micromamba run -n package-ci python -c "import nanobind, sys; assert nanobind.__version__ == '2.10.0', nanobind.__version__; print('nanobind', nanobind.__version__)"
-      - name: Download and verify the pinned Core SDK
+      - name: Download and verify the pinned core SDK
         shell: bash
         run: |
           mkdir -p "${{ runner.temp }}/core"
-          gh release download core-v4.0.0-ci.2 --repo okohlbacher/OpenMS4-core \
-            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-bc9cc12514c7.tar.gz*" \
+          gh release download core-v4.0.0-ci.3 --repo okohlbacher/OpenMS4-core \
+            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-c77ff14b4521.tar.gz*" \
             --dir "${{ runner.temp }}/core"
           cd "${{ runner.temp }}/core"
           if command -v shasum >/dev/null; then
@@ -109,7 +118,7 @@ jobs:
       - name: Build, test, install, and package
         run: >-
           micromamba run -n package-ci python tools/ci/run.py
-          --platform ${{ matrix.platform }} --jobs ${{ (startsWith(runner.name, 'dax') && 24) || (startsWith(runner.name, 'studio') && 8) || matrix.jobs }}
+          --platform ${{ matrix.platform }} --jobs ${{ (startsWith(runner.name, 'dax') && 24) || (startsWith(runner.name, 'studio') && 8) || (startsWith(runner.name, 'DESKTOP') && 8) || matrix.jobs }}
           --core-dir "${{ runner.temp }}/core"
           --cli-source dependencies/cli
           --prose-source dependencies/prose
