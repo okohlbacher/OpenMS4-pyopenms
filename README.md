@@ -216,3 +216,26 @@ also requires compile-time performance validation with the unmodified dependency
 Historical wrapping documentation, `pxds/` and `pyTOPP/` examples are preserved
 for provenance. The active build uses only `bindings/*.cpp`; the legacy Cython
 files are not a second supported binding implementation.
+
+<!-- package-graph:begin -->
+## Where this package sits
+
+![OpenMS 4 package architecture](docs/package-architecture.svg)
+
+`pyopenms` builds against the installed **core**, **test-data**, **prose**, **flash** packages at the revisions recorded in [`dependencies.lock.json`](dependencies.lock.json). **flashapp** builds against it.
+
+| Repository | Relation | Contents |
+| --- | --- | --- |
+| [OpenMS4-core](https://github.com/okohlbacher/OpenMS4-core) | dependency | scientific library, OpenSwathAlgo, readers and writers, runtime data, optional TestSupport |
+| [OpenMS4-test-data](https://github.com/okohlbacher/OpenMS4-test-data) | dependency | versioned fixtures and the installed numerical suite |
+| [OpenMS4-prose](https://github.com/okohlbacher/OpenMS4-prose) | dependency | ProSE and the OpenMS::ProSE backend |
+| [OpenMS4-flash](https://github.com/okohlbacher/OpenMS4-flash) | dependency | FLASHDeconv and the OpenMS::FLASH backend |
+| [OpenMS4-flashapp](https://github.com/okohlbacher/OpenMS4-flashapp) | consumer | Streamlit application and Vue component |
+
+The eighteen repositories are assembled by the parent repository
+[OpenMS4-tests](https://github.com/okohlbacher/OpenMS4-tests), which holds the submodule pins (`packages.lock.json`), the
+dependency-order build runner and the contract tests that keep the graph consistent.
+[`docs/project-state.md`](https://github.com/okohlbacher/OpenMS4-tests/blob/codex/package-split/docs/project-state.md) is the current state
+of the whole project; [`docs/build-split-packages.md`](https://github.com/okohlbacher/OpenMS4-tests/blob/codex/package-split/docs/build-split-packages.md)
+reproduces the installed-SDK build.
+<!-- package-graph:end -->
