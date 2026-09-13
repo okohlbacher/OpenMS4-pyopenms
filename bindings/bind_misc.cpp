@@ -1676,6 +1676,10 @@ DefaultParamHandler
         .def("consumeChromatogram", [](OpenMS::MSDataSqlConsumer& self, OpenMS::MSChromatogram& c) { return self.consumeChromatogram(c); }, "c"_a, "Write a chromatogram to the output file")
         .def("setExpectedSize", [](OpenMS::MSDataSqlConsumer& self, size_t p0, size_t p1) { return self.setExpectedSize(p0, p1); })
         .def("setExperimentalSettings", [](OpenMS::MSDataSqlConsumer& self, const OpenMS::ExperimentalSettings& p0) { return self.setExperimentalSettings(p0); })
+        // The destructor also finalizes but can only log a failed write; finalize() raises it.
+        .def("finalize", [](OpenMS::MSDataSqlConsumer& self) { self.finalize(); }, "Write the buffered records and the run information, raising on a write error")
+        .def("addRun", [](OpenMS::MSDataSqlConsumer& self, const std::string& filename, OpenMS::UInt64 run_id) { self.addRun(filename, run_id); }, "filename"_a, "run_id"_a, "Flush, then insert a RUN entry with this id and file name")
+        .def("setRunId", [](OpenMS::MSDataSqlConsumer& self, OpenMS::UInt64 run_id) { self.setRunId(run_id); }, "run_id"_a, "Flush, then write subsequent records under this run id")
         ;
 
     // -----------------------------------------------------------------------

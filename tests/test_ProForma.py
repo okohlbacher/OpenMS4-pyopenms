@@ -748,6 +748,42 @@ def test_get_spectrum_generation_issues():
     assert len(issues_unloc) > 0
 
 
+def test_mass_validation_regressions():
+    """Mass and spectrum APIs refuse chemistry they cannot compute (mirrors ProFormaParser_test)."""
+    import pyopenms as p
+
+    ranged = p.Peptidoform.fromString("(M[UNIMOD:35]A)[Formula:C]")
+    expected = p.AASequence.fromString("M(Oxidation)A").getMonoWeight() + 12.0
+    assert ranged.getMonoWeight() == pytest.approx(expected)
+    assert p.ProForma.tryGetMonoWeight(ranged) == pytest.approx(expected)
+    # an empty ambiguous region has no defined mass
+    assert p.ProForma.tryGetMonoWeight(p.Peptidoform.fromString("PEP(?)TIDE")) is None
+
+    for text in ("PEPK[#XL1]IDE//ANOK[#XL1]THER",
+                 "(M[UNIMOD:35]A)[+1]K[+138.068#XL1]//PEPK[#XL1]IDE",
+                 "M[UnknownMod999]AK[+138.068#XL1]//PEPK[#XL1]IDE"):
+        ion = p.PeptidoformIon.fromString(text)
+        assert not ion.canGenerateSpectrum(), text
+        assert len(ion.getSpectrumGenerationIssues()) > 0, text
+        with pytest.raises(RuntimeError):
+            ion.generateSpectrum()
+
+
+def test_cross_link_precursor_matches_mz():
+    """The spectrum generator and getMZ resolve the rounded linker delta to the same chemistry."""
+    import pyopenms as p
+
+    ion = p.PeptidoformIon.fromString("M[UNIMOD:35]AK[+138.068#XL1]//PEPK[#XL1]IDE/2")
+    assert ion.canGenerateSpectrum()
+    assert ion.generateSpectrum().size() > 0
+    precursor = ion.generateSpectrum(2, 2, "M", False, True)
+    labels = precursor.getStringDataArrays()[0]
+    assert len(labels) == precursor.size()
+    intact = [precursor[i].getMZ() for i in range(precursor.size()) if labels[i] == "[M+H]"]
+    assert len(intact) == 2
+    assert all(abs(mz - ion.getMZ()) < 1e-8 for mz in intact)
+
+
 def test_get_spectrum_generation_issues_ion():
     """Test getSpectrumGenerationIssues for PeptidoformIon."""
     import pyopenms as p
