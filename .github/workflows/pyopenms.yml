@@ -56,9 +56,6 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       PYTHONUTF8: '1'
       OMP_NUM_THREADS: '1'
-      # Parallel launches of freshly built binaries stall ~25 s on the Mac Studio runner (in
-      # syspolicyd); serial launches do not. The drivers run ctest serially when this is 1.
-      OPENMS4_SERIAL_TESTS: ${{ startsWith(runner.name, 'studio-') && '1' || '0' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -66,7 +63,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: 88e7216996b6973aa09e75663ec1284fbb388dd9
+          ref: 273817824d8646c8eb4a52cf2d964d2f934587bc
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -78,13 +75,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 62eaf2e56a49a8aea0fd21d38b0ff6c98ea96a45
+          ref: 4cf47b58857b43fb37810666caa7012199b856d4
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: 0df52175d3b82aa83e5ebc6b8a035adf7e4c1bf9
+          ref: faecb8ab43a2c1b272fa1fee42259332d6c5fc2d
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
@@ -119,6 +116,8 @@ jobs:
           fi
           tar -xzf *.tar.gz
       - name: Build, test, install, and package
+        env:
+          OPENMS4_SERIAL_TESTS: ${{ startsWith(runner.name, 'studio-') && '1' || '0' }}
         run: >-
           micromamba run -n package-ci python tools/ci/run.py
           --platform ${{ matrix.platform }} --jobs ${{ (startsWith(runner.name, 'dax') && 24) || (startsWith(runner.name, 'studio') && 8) || (startsWith(runner.name, 'DESKTOP') && 8) || matrix.jobs }}
