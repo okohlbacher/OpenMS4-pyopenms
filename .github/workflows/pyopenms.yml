@@ -56,6 +56,9 @@ jobs:
       GH_TOKEN: ${{ github.token }}
       PYTHONUTF8: '1'
       OMP_NUM_THREADS: '1'
+      # Parallel launches of freshly built binaries stall ~25 s on the Mac Studio runner (in
+      # syspolicyd); serial launches do not. The drivers run ctest serially when this is 1.
+      OPENMS4_SERIAL_TESTS: ${{ startsWith(runner.name, 'studio-') && '1' || '0' }}
     steps:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
@@ -63,25 +66,25 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: 53448a1759e963daa6b5b9cc3f2900c318f7bba3
+          ref: 88e7216996b6973aa09e75663ec1284fbb388dd9
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-test-data
-          ref: f4f6b5d357675c5ec340a63ba785f1be7050d1e8
+          ref: 7349fc9977bbb9653c3571364e5b4688be442846
           path: dependencies/test-data
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 4dec802bee6c632e322c1eaedd188b8af492dc04
+          ref: 62eaf2e56a49a8aea0fd21d38b0ff6c98ea96a45
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: f2752a8d04b608492525120ee6d36ea8b47a715e
+          ref: 0df52175d3b82aa83e5ebc6b8a035adf7e4c1bf9
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
@@ -105,8 +108,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p "${{ runner.temp }}/core"
-          gh release download core-v4.0.0-ci.3 --repo okohlbacher/OpenMS4-core \
-            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-c77ff14b4521.tar.gz*" \
+          gh release download core-v4.0.0-ci.4 --repo okohlbacher/OpenMS4-core \
+            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-4f5c86fd90f3.tar.gz*" \
             --dir "${{ runner.temp }}/core"
           cd "${{ runner.temp }}/core"
           if command -v shasum >/dev/null; then
