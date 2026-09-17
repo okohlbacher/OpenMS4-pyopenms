@@ -49,7 +49,7 @@ jobs:
             jobs: 4
           - platform: windows-x64
             runner: windows-2022
-            pool: flashbox-windows-x64
+            pool: ''
             packages: glpk=5.*
             jobs: 4
     env:
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: 41ac1eb0b374ab2150e79cae62175a83cb99308a
+          ref: b65ece7fd5a72b02b87cc18432d917c60b2b4282
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -75,13 +75,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 4bfb2065fd39602e6640ad470f3ea46e9b4e0e7d
+          ref: 4fecf3cf80b6e331115ad54fa41f6ea2aef4bd88
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: 9bccba81aa138a7cfa4158d15607ddc9f3d61c63
+          ref: 3b5b6e65422ac516598e035006eb083a982d824f
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
