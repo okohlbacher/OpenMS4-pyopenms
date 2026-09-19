@@ -3,22 +3,22 @@
   "dependencies": {
     "OpenMS": {
       "version": "4.0.0",
-      "source_revision": "eb58e981d7e0864634b59230874a56a1512369f7",
+      "source_revision": "7d90cec8718d28518527acc10b495550f106de26",
       "repository": "https://github.com/okohlbacher/OpenMS4-core"
     },
     "OpenMSTestData": {
       "version": "1.0.0",
-      "source_revision": "37327c7b53e1d44baefb665deb385ef93286c77c",
+      "source_revision": "c4fd33576dec6689818022e139c5f0f4808b74b0",
       "repository": "https://github.com/okohlbacher/OpenMS4-test-data"
     },
     "OpenMSProSE": {
       "version": "1.0.0",
-      "source_revision": "11bc89966a2a13e1f524f83736ca544e2fe98e2f",
+      "source_revision": "bc6eebce6a19750826dca962b33e0cee19535cdd",
       "repository": "https://github.com/okohlbacher/OpenMS4-prose"
     },
     "OpenMSFLASH": {
       "version": "1.0.0",
-      "source_revision": "5af478a978f453e697070746c2f854d27b06bcb2",
+      "source_revision": "52083a797e21f80e2b0bf5af277dd4286133e94c",
       "repository": "https://github.com/okohlbacher/OpenMS4-flash"
     }
   },
