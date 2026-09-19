@@ -18,7 +18,7 @@
     },
     "OpenMSFLASH": {
       "version": "1.0.0",
-      "source_revision": "52083a797e21f80e2b0bf5af277dd4286133e94c",
+      "source_revision": "639bb9da46e21a8f292723dec0b17a616d9b934c",
       "repository": "https://github.com/okohlbacher/OpenMS4-flash"
     }
   },
