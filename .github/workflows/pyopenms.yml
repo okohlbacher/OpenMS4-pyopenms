@@ -63,25 +63,25 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: 53c5d97277c3c4911eb235f4d2a024f2b9709215
+          ref: be670fbbbdb2a3078ded440b9b8759fd1c782656
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-test-data
-          ref: c4fd33576dec6689818022e139c5f0f4808b74b0
+          ref: bad3c3cbf296de342d12e1e0384baa8444aa915c
           path: dependencies/test-data
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: bc6eebce6a19750826dca962b33e0cee19535cdd
+          ref: 7a29178a35f21b07857d0502c0fa67038a6b5f90
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: 639bb9da46e21a8f292723dec0b17a616d9b934c
+          ref: 42530d7a3795659c59e5048e00f6c679cbb5ae9b
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
@@ -105,8 +105,8 @@ jobs:
         shell: bash
         run: |
           mkdir -p "${{ runner.temp }}/core"
-          gh release download core-v4.0.0-ci.8 --repo okohlbacher/OpenMS4-core \
-            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-7d90cec8718d.tar.gz*" \
+          gh release download core-v4.0.0-ci.9 --repo okohlbacher/OpenMS4-core \
+            --pattern "OpenMS4-core-${{ matrix.platform }}-Release-83ce20da7833.tar.gz*" \
             --dir "${{ runner.temp }}/core"
           cd "${{ runner.temp }}/core"
           if command -v shasum >/dev/null; then
