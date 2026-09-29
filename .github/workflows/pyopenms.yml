@@ -39,7 +39,7 @@ jobs:
             jobs: 4
           - platform: macos-arm64
             runner: macos-15
-            pool: studio-macos-arm64
+            pool: ''
             packages: llvm-openmp coin-or-cbc=2.10.*
             jobs: 2
           - platform: macos-x64
@@ -63,7 +63,7 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-cli
-          ref: be670fbbbdb2a3078ded440b9b8759fd1c782656
+          ref: 475065671c1764700c0348037858d07e1934b110
           path: dependencies/cli
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
@@ -75,13 +75,13 @@ jobs:
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-prose
-          ref: 7a29178a35f21b07857d0502c0fa67038a6b5f90
+          ref: 67ff6ca40390f42fea93424761e53ce94aa4aa3e
           path: dependencies/prose
           persist-credentials: false
       - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
         with:
           repository: okohlbacher/OpenMS4-flash
-          ref: 42530d7a3795659c59e5048e00f6c679cbb5ae9b
+          ref: 9a80d16fda93caaa97171b2e3dfabda30ebb8c94
           path: dependencies/flash
           persist-credentials: false
       - uses: mamba-org/setup-micromamba@f457c30a868e4760d3a6fcea5f25dc655b8edf39 # v3
